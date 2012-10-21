@@ -13,6 +13,7 @@ call vundle#rc()
 " let Vundle manage Vundle
 " required! 
 Bundle 'gmarik/vundle'
+
 " vim-scripts repos
 Bundle 'STL-improved'
 Bundle 'majutsushi/tagbar'
@@ -26,12 +27,18 @@ Bundle 'osyo-manga/neocomplcache-clang_complete'
 Bundle 'genutils'
 Bundle 'lookupfile'
 Bundle 'kien/ctrlp.vim'
+
+" 快速导航文件
 Bundle 'wincent/Command-T'
 Bundle 'autopreview'
 Bundle 'echofunc.vim'
 Bundle 'grep.vim'
 Bundle 'a.vim'
+
+" 代码注释
 Bundle 'The-NERD-Commenter'
+
+" 智能文件管理
 Bundle 'The-NERD-tree'
 "under linux need exec 'dos2unix ~/.vim/bundle/QFixToggle/plugin/qfixtoggle.vim'
 Bundle 'QFixToggle'
@@ -45,6 +52,24 @@ Bundle 'DoxygenToolkit.vim'
 Bundle 'headerGatesAdd.vim'
 Bundle 'ShowMarks'
 Bundle 'Lokaltog/vim-powerline'
+
+" for my plugin
+" 代码段补全
+Bundle 'snipMate'
+Bundle 'Lokaltog/vim-easymotion'
+
+" 智能打开文件的插件
+Bundle 'shemerey/vim-peepopen.git'
+Bundle 'ack.vim'
+
+" write HTML code faster
+Bundle 'rstacruz/sparkup.git'
+Bundle 'vim-surround.git'
+Bundle 'vim-slime.git'
+
+" 多重色彩括号
+Bundle 'vim-scripts/Rainbow-Parenthesis.git'
+
 " non github repos
 " autocomplete.match.pair.vim,这个安装完必须在.vim/bundle/449512/目录下创建plugin目录并在其下创建软链接指向autocomplete.match.pair.vim,否则不工作,另外不知为何(号不会自动完成配对
 Bundle 'git://gist.github.com/449512.git'
@@ -52,6 +77,9 @@ Bundle 'git://gist.github.com/449512.git'
 filetype plugin indent on     " required! 
 "vundle end
 
+"""""""""""""""""""""""""""""""""""""
+" Colors and Fonts
+"""""""""""""""""""""""""""""""""""""
 hi Normal ctermbg=NONE  "开启背景透明
 set t_Co=256 " Explicitly tell vim that the terminal supports 256 colors
 "colorscheme peaksea
@@ -59,30 +87,95 @@ let g:solarized_termcolors=256
 colorscheme solarized
 set background=dark
 
-syntax on "显高亮
-set number
+"""""""""""""""""""""""""""""""""""""
+" Basic setting
+"""""""""""""""""""""""""""""""""""""
+" termencoding: Vim 所工作 的终端
+" 下面这句只影响普通模式 (非图形界面) 下的 Vim。
+let &termencoding=&encoding
+
+set ambiwidth=double        " ambiwidth 默认值为 single。在其值为 single 时，
+                            " 若 encoding 为 utf-8，gvim 显示全角符号时就会
+                            " 出问题，会当作半角显示。
+set backspace=indent,eol,start
+                            " 不设定的话在插入状态无法用退格键和 Delete
+                            " 键删除回车符
+set backupcopy=yes          " 设置备份时的行为为覆盖
+
+set confirm                 " 用确认对话框（对于 gvim）或命令行选项（对于
+                            " vim）来代替有未保存内容时的警告信息
+set display=lastline        " 长行不能完全显示时显示当前屏幕能显示的部分。
+                            " 默认值为空，长行不能完全显示时显示 @。
+set formatoptions=tcqro     " 使得注释换行时自动加上前导的空格和星号
+set hidden                  " 允许在有未保存的修改时切换缓冲区，
+                            " 此时的修改由切换由 vim 负责保存
+set history=100              " 设置冒号命令和搜索命令的命令历史列表的长度为 100
+"set mouse=a                 " 设定在任何模式下鼠标都可用
+set nobackup                " 覆盖文件时不备份
+set nocompatible            " 设定 gvim 运行在增强模式下
+set noignorecase            " 默认区分大小写
+set nolinebreak             " 在单词中间断行
+set number                  " 显示行号
+set scrolloff=5             " 设定光标离窗口上下边界 5 行时窗口自动滚动
+set whichwrap=b,s,<,>,[,]   " 设定退格键、空格键以及左右方向键在行首行尾时的
+                            " 行为，不影响 h 和 l 键
+set wrap                    " 自动换行显示
 set autochdir          " 自动切换当前目录为当前文件所在的目录
 set autoread           " 文件被其他程序修改时自动载入
+syntax on                   " 自动语法高亮
 
-" vim-powerline
+if v:version >= 700
+    set completeopt=menu,longest,preview
+                            " 自动补全(ctrl-p)时的一些选项：
+                            " 多于一项时显示菜单，最长选择，
+                            " 显示当前选择的额外信息
+endif
+
+" 与Windows共享剪贴板
+ set clipboard+=unnamed
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 设置命令行和状态栏
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"set ruler                  " 打开状态栏标尺
+"set cmdheight=1             " 设定命令行的行数为 1
+"set laststatus=2            " 显示状态栏 (默认值为 1, 无法显示状态栏)
+"set statusline=%F%m%r,%Y,%{&fileformat}\ \ \ ASCII=\%b,HEX=\%B\ \ \ %l,%c%V\ %p%%\ \ \ [\ %L\ lines\ in\ all\ ]
+                            " 设置在状态行显示的信息如下：
+                            " %F    当前文件名
+                            " %m    当前文件修改状态
+                            " %r    当前文件是否只读
+                            " %Y    当前文件类型
+                            " %{&fileformat}5=
+                            "       当前文件编码
+                            " %b    当前光标处字符的 ASCII 码值
+                            " %B    当前光标处字符的十六进制值
+                            " %l    当前光标行号
+                            " %c    当前光标列号
+                            " %V    当前光标虚拟列号 (根据字符所占字节数计算)
+                            " %p    当前行占总行数的百分比
+                            " %%    百分号
+                            " %L    当前文件总行数
+
+" vim-powerline statubar related
 set laststatus=2 " always have status-line'
 let g:Powerline_symbols = 'fancy'
-"set statusline=%F%m%r%h%w\ %{&ff}\ %Y\ [ascii:%b\ hex:0x\%02.2B]\ [%{(&fenc\ ==\ \"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %=%l/%L,%v\ %p%%
+set statusline=%F%m%r%h%w\ %{&ff}\ %Y\ [ascii:%b\ hex:0x\%02.2B]\ [%{(&fenc\ ==\ \"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %=%l/%L,%v\ %p%%
+set showcmd                 " 在状态栏显示目前所执行的指令，未完成的指令片段亦
+                            " 会显示出来
 
-" allow backspacing over everything in insert mode
-set backspace=indent,eol,start
-
-" 光标到达行尾或者行首时，特定键继续移动转至下一行或上一行
-set whichwrap+=b,s,<,>,[,]
+"自定义命令
+"""""""""""""""""""""""""""""""""""""
+autocmd! BufWritePost .vimrc source $HOME/.vimrc    " .vimrc编辑后重载
 
 " Tab related
 set shiftwidth=4
 set tabstop=4
 set softtabstop=4
 set expandtab
-                        
 set list
-set listchars=tab:\|\ ,   " 显示Tab符，使用一高亮竖线代替
+"set listchars=tab:\|\ ,   " 显示Tab符，使用一高亮竖线代替
+set listchars=tab:▸\ ,eol:¬
 
 " Indent related
 " http://vimcdoc.sourceforge.net/doc/indent.html
@@ -93,6 +186,8 @@ set listchars=tab:\|\ ,   " 显示Tab符，使用一高亮竖线代替
 set cinoptions=g0,:0,N-s,(0
 set autoindent      " always set autoindenting on
 set smartindent
+" C-style indentdenting
+set cindent "usage: select codes, press '=' key, the codes whichwrapill autoindenting
 
 set mps+=<:>        " 让<>可以使用%跳转
 set hid             " allow to change buffer without saving 
@@ -103,6 +198,8 @@ set lazyredraw      " do not redraw while executing macros (much faster)
 set nf=
 " In Visual Block Mode, cursor can be positioned where there is no actual character
 set ve=block
+
+" Search related
 "set ignorecase " Set search/replace pattern to ignore case 
 set smartcase   " Set smartcase mode on, If there is upper case character in the search patern, the 'ignorecase' option will be override.
 set showcmd     " display incomplete commands
@@ -111,7 +208,6 @@ set hlsearch    " highlight search
 set magic       " Enable magic matching
 set showmatch   " show matching paren
 set wildmenu    " 增强模式中的命令行自动完成操作
-"set mouse=a    " Enable mouse usage (all modes) in terminals
 
 " showmarks setting
 let showmarks_enable = 0 " disable showmarks when vim startup
@@ -128,7 +224,7 @@ let g:tagbar_width = 30
 
 let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
 let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
-let g:DoxygenToolkit_authorName="zengming@jyxtec.com" 
+let g:DoxygenToolkit_authorName="longfeey@msn.com"
 let g:DoxygenToolkit_versionString="0.1.00"
 let g:DoxygenToolkit_briefTag_funcName="yes"
 autocmd BufNewFile *.{h,hpp,c,cpp} DoxAuthor 
@@ -147,9 +243,9 @@ inoremap <C-l> <Esc><C-W>l
 noremap <Up> gk
 noremap <Down> gj
 
-" use Meta key(Windows:Alt) to move cursor in insert mode. 
-" Note: if system install "Lingoes Translator", 
-"   you will need change/disabled hot key. 
+" use Meta key(Windows:Alt) to move cursor in insert mode.
+" Note: if system install "Lingoes Translator",
+"   you will need change/disabled hot key.
 noremap! <M-j> <Down>
 noremap! <M-k> <Up>
 noremap! <M-h> <left>
@@ -182,7 +278,7 @@ endif
 "ctrlp
 let g:ctrlp_user_command = 'find %s -type f'
 
-set tags=tags;
+set tags=tags
 
 " -- cscope --
 let g:autocscope_menus=0
@@ -202,14 +298,14 @@ if has("cscope")
     set cscopetagorder=0
 endif
 
-nmap <C-_>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-nmap <C-_>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-nmap <C-_>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 
 " 解决cscope与tag共存时ctrl+]有时不正常的bug
 nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
@@ -219,7 +315,7 @@ nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
 " Then when you put the cursor on or in a word, press "\sw", and 
 " the word will be swapped with the next word.  The words may 
 " even be separated by punctuation (such as "abc = def"). 
-nnoremap <unique> <silent><leader>sw "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
+" nnoremap <unique> <silent><leader>sw "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
 
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
