@@ -27,6 +27,11 @@ Bundle 'osyo-manga/neocomplcache-clang_complete'
 Bundle 'genutils'
 Bundle 'lookupfile'
 Bundle 'kien/ctrlp.vim'
+Bundle 'ack.vim'
+Bundle 'bash-support.vim'
+Bundle 'slimv.vim'
+Bundle 'CRefVim'
+Bundle 'c.vim'
 
 " 快速导航文件
 Bundle 'wincent/Command-T'
@@ -60,12 +65,10 @@ Bundle 'Lokaltog/vim-easymotion'
 
 " 智能打开文件的插件
 Bundle 'shemerey/vim-peepopen.git'
-Bundle 'ack.vim'
 
 " write HTML code faster
 Bundle 'rstacruz/sparkup.git'
 Bundle 'vim-surround.git'
-Bundle 'vim-slime.git'
 
 " 多重色彩括号
 Bundle 'vim-scripts/Rainbow-Parenthesis.git'
@@ -227,7 +230,7 @@ let g:DoxygenToolkit_blockFooter="----------------------------------------------
 let g:DoxygenToolkit_authorName="longfeey@msn.com"
 let g:DoxygenToolkit_versionString="0.1.00"
 let g:DoxygenToolkit_briefTag_funcName="yes"
-autocmd BufNewFile *.{h,hpp,c,cpp} DoxAuthor 
+"autocmd BufNewFile *.{h,hpp,c,cpp} DoxAuthor
 
 " Switching between buffers. 
 nnoremap <C-h> <C-W>h
@@ -278,7 +281,7 @@ endif
 "ctrlp
 let g:ctrlp_user_command = 'find %s -type f'
 
-set tags=tags
+set tags=tags;
 
 " -- cscope --
 let g:autocscope_menus=0
@@ -292,10 +295,17 @@ if has("cscope")
     set csprg=/usr/bin/cscope
     " Use both cscope and ctag
     set cscopetag
-    " Show msg when cscope db added
-    set cscopeverbose
     " Use cscope for definition search first
     set cscopetagorder=0
+    " add any database in current directory
+    if filereadable("cscope.out")
+        cs add cscope.out
+    " else add database pointed to by environment
+    elseif $CSCOPE_DB != ""
+        cs add $CSCOPE_DB
+    endif
+    " Show msg when cscope db added
+    set cscopeverbose
 endif
 
 nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
@@ -391,8 +401,8 @@ function! AutoUpdateTheLastUpdateInfo()
         call setpos(".", s:original_pos)
     endif
 endfunction
-autocmd BufWritePost *.{h,hpp,c,cpp} call AutoUpdateTheLastUpdateInfo()
-autocmd BufNewFile *.{h,hpp,c,cpp} exec 'call append(0, "\/\/ Last Update:" . strftime("%Y-%m-%d %H:%M:%S", localtime()))'
+"autocmd BufWritePost *.{h,hpp,c,cpp} call AutoUpdateTheLastUpdateInfo()
+"autocmd BufNewFile *.{h,hpp,c,cpp} exec 'call append(0, "\/\/ Last Update:" . strftime("%Y-%m-%d %H:%M:%S", localtime()))'
 
 function! ToggleNERDTreeAndTagbar()
     let w:jumpbacktohere = 1
