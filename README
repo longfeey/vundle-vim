@@ -1,0 +1,95 @@
+使用Vundle管理vim插件，既方便有省心，我们只需维护好.vimrc文件，便很方便的管理，更新vim插件。
+
+一.使用方法：
+cd ~
+git clone https://github.com/longfeey/vundle-vim.git 
+git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+cp vundle-vim/vimrc ~/.vimrc
+
+安装插件
+打开vim 
+在vim命令行输入:BundleInstall,回车，开始下载vimrc配置中的插件
+
+二.可能存在到问题：
+1)powerline乱码问题
+默认没有带字体，所以需要自己下载字体。
+在https://github.com/Lokaltog/vim-powerline/wiki/Patched-fonts选择字体下载到~/.fonts目录即可。
+
+2)Command-t安装问题
+错误：`require’: no such file to load — mkmf (LoadError)'
+
+mkmf.rb is part of the “ruby1.8-dev” package. 
+sudo apt-get install ruby1.8-dev
+
+3)Qfixtoggle错误
+QFixToggle/plugin/qfixtoggle.vim为DOS格式，需要转换为unix格式
+sudo apt-get install dos2unix
+dos2unix ~/.vim/bundle/QFixToggle/plugin/qfixtoggle.vim
+
+二.Vundle说明
+1.Vundle介绍
+项目托管在github上 https://github.com/gmarik/vundle
+其特色在于使用git来管理插件,更新方便，支持搜索，一键更新，从此只需要一个vimrc走天下.
+
+2.安装与配置
+使用git命令$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+windows下使用，可以考虑放置在$HOME/.vim/bundle/vundle
+
+3. .vimrc编写
+.vimrc修改好后放置与$HOME/.vimrc
+
+" vundle {
+set rtp+=~/.vim/bundle/vundle/
+" 如果在windows下使用的话，设置为 
+" set rtp+=$HOME/.vim/bundle/vundle/
+call vundle#rc()
+" }
+"
+" let Vundle manage Vundle
+" required! 
+Bundle 'gmarik/vundle'
+ 
+" My Bundles here:
+"
+" original repos on github
+" github上的用户写的插件，使用这种用户名+repo名称的方式
+" Bundle 'tpope/vim-fugitive'
+" Bundle 'Lokaltog/vim-easymotion'
+" Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Bundle 'tpope/vim-rails.git'
+" vim-scripts repos
+" vimscripts的repo使用下面的格式，直接是插件名称
+Bundle 'taglist.vim'
+Bundle 'SuperTab'
+Bundle 'vimwiki'
+Bundle 'winmanager'
+Bundle 'bufexplorer.zip'
+Bundle 'The-NERD-tree'
+Bundle 'matrix.vim--Yang'
+Bundle 'FencView.vim'
+Bundle 'Conque-Shell'
+Bundle 'Vimpress'
+Bundle 'Markdown'
+Bundle 'LaTeX-Suite-aka-Vim-LaTeX'
+Bundle 'c.vim'
+Bundle 'snipMate'
+ 
+" non github reposo
+" 非github的插件，可以直接使用其git地址
+" Bundle 'git://git.wincent.com/command-t.git'
+" ...
+ 
+"
+" Brief help
+" :BundleList          - list configured bundles
+" :BundleInstall(!)    - install(update) bundles
+" :BundleSearch(!) foo - search(or refresh cache first) for foo
+" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
+" vundle主要就是上面这个四个命令，例如BundleInstall是全部重新安装，BundleInstall!则是更新
+" 一般安装插件的流程为，先BundleSearch一个插件，然后在列表中选中，按i安装
+" 安装完之后，在vimrc中，添加Bundle 'XXX'，使得bundle能够加载这个插件，同时如果
+" 需要配置这个插件，也是在vimrc中设置即可
+" see :h vundle for more details or wiki for FAQ
+" NOTE: comments after Bundle command are not allowed..
+
