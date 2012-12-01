@@ -10,10 +10,10 @@ cp vundle-vim/vimrc ~/.vimrc
 打开vim 
 在vim命令行输入:BundleInstall,回车，开始下载vimrc配置中的插件
 
-二.可能存在到问题：
+二.可能存在的问题：
 1)powerline乱码问题
 默认没有带字体，所以需要自己下载字体。
-在https://github.com/Lokaltog/vim-powerline/wiki/Patched-fonts选择字体下载到~/.fonts目录即可。
+在https://github.com/Lokaltog/vim-powerline/wiki/Patched-fonts 选择字体下载到~/.fonts目录即可。
 
 2)Command-t安装问题
 错误：`require’: no such file to load — mkmf (LoadError)'
