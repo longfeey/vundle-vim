@@ -1,21 +1,30 @@
 "~/.vimrc (configuration file for vim only)
 
-" Encoding related
-set fileencodings=utf-8,gb2312,gbk,gb18030
-set termencoding=utf-8
-
 "vundle begin
 filetype off                   " required!
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+" Man.vim
+source $VIMRUNTIME/ftplugin/man.vim
 
+set rtp+=~/.vim/bundle/vundle/
+
+" Add for go language filetype detect
+set runtimepath+=$GOROOT/misc/vim
+" set runtimepath+=~/.vim/bundle/gocode/vim
+call vundle#rc()
+" Vim plugin vundle manage {{{
 " let Vundle manage Vundle
 " required!
 Bundle 'gmarik/vundle'
 
-" vim-scripts repos
-""{{{
+" Bundle 'nsf/gocode', {'rtp': 'vim'}
+Bundle 'nsf/gocode'
+" Bundle 'Shougo/neocomplcache'
+" if !exists('g:neocomplcache_omni_patterns')
+		" let g:neocomplcache_omni_patterns = {}
+	" endif
+	" let g:neocomplcache_omni_patterns.go = '\h\w*'
+
 Bundle 'STL-improved'
 Bundle 'majutsushi/tagbar'
 Bundle 'tag_in_new_tab'
@@ -33,7 +42,9 @@ Bundle 'slimv.vim'
 Bundle 'adah1972/tellenc.git'
 Bundle 'translate.vim'
 Bundle 'bufexplorer.zip'
-""}}}
+Bundle 'Conque-Shell'
+
+
 " 快速导航文件
 Bundle 'wincent/Command-T'
 Bundle 'autopreview'
@@ -105,27 +116,53 @@ Bundle 'git://gist.github.com/449512.git'
 " ...
 filetype plugin indent on     " required!
 "vundle end
+""}}}
 
-let mapleader=","   " 映射快捷键开始命令,缺省为'/'(已经移到上面)
+" 自定义快捷键 {{{
+let mapleader=","   " 映射快捷键开始命令,缺省为'/'
 let g:mapleader=","
 
-" 自定义快捷键
-function! RunShell(Msg, Shell)
-    echo a:Msg . '...'
-    call system(a:Shell)
-    echon 'done'
-endfunction
+nmap <leader>w :w!<cr>  " 快速保存
+map <leader>q :q<cr>    " 快速退出
+map <leader>wq :wq<cr>  " 快速保存并退出
+nmap <silent> <leader><cr> :noh<cr> " Fast remove highlight search
 
+" 快速打开 ipython
+" map <leader>py :ConqueTermSplit ipython<CR>
+" 快速打开 bash
+" map <leader>sh :ConqueTermSplit bash<CR>
+" Remove the Windows ^M - when the encodings gets messed up
+noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
+
+" Fast editing of the .vimrc
+map <leader>e :e! ~/.vimrc<cr>
+autocmd! BufWritePost .vimrc source $HOME/.vimrc    " .vimrc编辑后重载
 " "cd" to change to open directory.
 let OpenDir=system("pwd")
 nmap <silent> <leader>cdr :exe 'cd ' . OpenDir<cr>:pwd<cr>
 nmap <silent> <leader>cdf :cd %:h<cr>:pwd<cr>
+
+set pastetoggle=<F2>
+" set the time(ms) break to refresh the preview window, I recommend 500ms~1000ms with good experience
+set updatetime=500
+
+"/<C-R><C-W> : 把单个<cword>单词放入搜索或者命令行
+nnoremap <silent> <F3> :Grep<CR>
+" nnoremap <silent> <F4> :Rgrep<CR>
+nmap  <F4> :vimgrep /<C-R>=expand("<cword>")<cr>/ **/*.c **/*.h<cr><C-o>:cw<cr>
+" make you could press F6 key to enable or disable the preview window, you can also set to other favorite hotkey here
+nnoremap <F6> :AutoPreviewToggle<CR>
+inoremap <F6> <ESC>:AutoPreviewToggle<CR>i
 
 "map <F7> :!ctags -R --c++-kinds=+px --fields=+ilaS --extra=+q <cr>
 "map <F9> :!find `pwd` \( -name .repo -o -name .git -o -name .svn -o -name cts -o -name out \) -prune -o -type f -iregex '.*\.\(c\|s\|cpp\|java\|h\)' >cscope.files <CR>
 nmap <F7> :call RunShell("Generate tags", "ctags -R --c++-kinds=+px --fields=+ilaS --extra=+q `pwd`")<cr>
 nmap <F9> :call RunShell("Generate cscope files and lookup tags", "~/.vim/shell/gencscope.sh && ~/.vim/shell/genfiletags.sh")<cr>
 nmap <F12> :!cscope -bqk -i cscope.files <cr>
+
+map <leader>t2 :setlocal shiftwidth=2<cr>
+map <leader>t4 :setlocal shiftwidth=4<cr>
+map <leader>t8 :setlocal shiftwidth=8<cr>
 
 " Switching between buffers.
 nnoremap <C-h> <C-W>h
@@ -149,27 +186,87 @@ noremap! <M-k> <Up>
 noremap! <M-h> <left>
 noremap! <M-l> <Right>
 
-set pastetoggle=<F2>
-"/<C-R><C-W> : 把单个<cword>单词放入搜索或者命令行
-nnoremap <silent> <F3> :Grep<CR>
-" nnoremap <silent> <F4> :Rgrep<CR>
+""""""""""""""""""""""""""""""
+" => Visual mode related
+""""""""""""""""""""""""""""""
+" Really useful!
+"  In visual mode when you press * or # to search for the current selection
+vnoremap <silent> * :call VisualSearch('f')<CR>
+vnoremap <silent> # :call VisualSearch('b')<CR>
 
-nmap  <F4> :vimgrep /<C-R>=expand("<cword>")<cr>/ **/*.c **/*.h<cr><C-o>:cw<cr>
-" make you could press F6 key to enable or disable the preview window, you can also set to other favorite hotkey here
-nnoremap <F6> :AutoPreviewToggle<CR>
-inoremap <F6> <ESC>:AutoPreviewToggle<CR>i
+" When you press gv you vimgrep after the selected text
+vnoremap <silent> gv :call VisualSearch('gv')<CR>
+map <leader>g :vimgrep // **/*.<left><left><left><left><left><left><left>
 
-" set the time(ms) break to refresh the preview window, I recommend 500ms~1000ms with good experience
-set updatetime=500
+function! RunShell(Msg, Shell)
+    echo a:Msg . '...'
+    call system(a:Shell)
+    echon 'done'
+endfunction
 
-" Man.vim
-source $VIMRUNTIME/ftplugin/man.vim
+"}}}
+
+" => Moving around, tabs and buffers {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Close the current buffer
+map <leader>bd :Bclose<cr>
+
+" Close all the buffers
+map <leader>ba :1,300 bd!<cr>
+
+" Use the arrows to something usefull
+map <right> :bn<cr>
+map <left> :bp<cr>
+
+" Tab configuration
+map <leader>tn :tabnew %<cr>
+map <leader>te :tabedit
+map <leader>tc :tabclose<cr>
+map <leader>tm :tabmove
+
+command! Bclose call <SID>BufcloseCloseIt()
+function! <SID>BufcloseCloseIt()
+   let l:currentBufNum = bufnr("%")
+   let l:alternateBufNum = bufnr("#")
+
+   if buflisted(l:alternateBufNum)
+     buffer #
+   else
+     bnext
+   endif
+
+   if bufnr("%") == l:currentBufNum
+     new
+   endif
+
+   if buflisted(l:currentBufNum)
+     execute("bdelete! ".l:currentBufNum)
+   endif
+endfunction
+
+" Specify the behavior when switching between buffers
+try
+  set switchbuf=usetab
+  set stal=2
+catch
+endtry
+" }}}
 
 " fencview.vim 对打开的文件的编码自动识别 {{{
 let g:fencview_autodetect = 1
 " }}}
 
-" Colors and Fonts {{{
+" Colors, encode and Fonts {{{
+set fileencodings=utf-8,gb2312,gbk,gb18030
+set termencoding=utf-8
+
+set encoding=utf8
+try
+    lang zh_CN
+catch
+endtry
+set ffs=unix,dos,mac "Default file types
+
 """""""""""""""""""""""""""""""""""""
 hi Normal ctermbg=NONE  "开启背景透明
 set t_Co=256 " Explicitly tell vim that the terminal supports 256 colors
@@ -177,6 +274,33 @@ set t_Co=256 " Explicitly tell vim that the terminal supports 256 colors
 let g:solarized_termcolors=256
 colorscheme solarized
 set background=dark
+
+" Gui选项{{{
+
+ if has("gui_running")
+
+     set guioptions-=m " 关闭菜单栏
+
+     set guioptions-=T " 关闭工具栏
+
+     set guioptions-=l " 关闭左边滚动条
+
+     set guioptions-=L " 关闭垂直分隔窗口左边滚动条
+
+     set guioptions-=r " 关闭右边滚动条
+
+     set guioptions-=R " 关闭垂直分隔窗口右边滚动条
+
+     set guifont=Monospace:12 "在Linux下设置字体的命令是：
+
+     set guicursor=a:blinkon0 "停止光标闪烁
+
+     set shell=/bin/bash
+
+ endif
+
+ "}}}
+
 " }}}
 
 " Basic setting {{{
@@ -236,32 +360,6 @@ endif
  set clipboard+=unnamed
 " }}}
 
-" Gui选项{{{
-
- if has("gui_running")
-
-     set guioptions-=m " 关闭菜单栏
-
-     set guioptions-=T " 关闭工具栏
-
-     set guioptions-=l " 关闭左边滚动条
-
-     set guioptions-=L " 关闭垂直分隔窗口左边滚动条
-
-     set guioptions-=r " 关闭右边滚动条
-
-     set guioptions-=R " 关闭垂直分隔窗口右边滚动条
-
-     set guifont=Monospace:12 "在Linux下设置字体的命令是：
-
-     set guicursor=a:blinkon0 "停止光标闪烁
-
-     set shell=/bin/bash
-
- endif
-
- "}}}
-
  "改变注释代码的颜色{{{
 
  hi Comment ctermfg=6
@@ -310,8 +408,6 @@ set showcmd                 " 在状态栏显示目前所执行的指令，未�
 
 " 自定义命令 {{{
 """""""""""""""""""""""""""""""""""""
-autocmd! BufWritePost .vimrc source $HOME/.vimrc    " .vimrc编辑后重载
-
 " Tab related
 set shiftwidth=4
 set tabstop=4
@@ -370,7 +466,7 @@ let g:DoxygenToolkit_authorName="longfeey"
 let g:DoxygenToolkit_versionString="0.1.00"
 let g:DoxygenToolkit_briefTag_funcName="yes"
 "autocmd BufNewFile *.{h,hpp,c,cpp} DoxAuthor
-
+" }}}
 
 " {{{ lookupfile插件默认会使用ctags产生的tag来查找，效率很低,使用下面脚本生成filenametags
 
@@ -701,9 +797,6 @@ let g:clang_complete_auto=1
 
 ""}}}
 
-"Fast remove highlight search
-nmap <silent> <leader><cr> :noh<cr>
-
 " 每行超过80个的字符用下划线标示
 au BufRead,BufNewFile *.asm,*.c,*.cpp,*.java,*.cs,*.sh,*.lua,*.pl,*.pm,*.py,*.rb,*.hs,*.vim 2match Underlined /.\%81v/
 " 超过80个的字符高亮
@@ -733,8 +826,7 @@ endfunction
 "autocmd BufWritePost *.{h,hpp,c,cpp} call AutoUpdateTheLastUpdateInfo()
 "autocmd BufNewFile *.{h,hpp,c,cpp} exec 'call append(0, "\/\/ Last Update:" . strftime("%Y-%m-%d %H:%M:%S", localtime()))'
 
-"NERD_commenter.vim "可以使用cvim.zip, 但是这个觉到习惯一些
-""{{{
+"NERD_commenter.vim " 注释插件，可以使用cvim.zip, 但是这个觉到习惯一些 {{{
 
 let NERDSpaceDelims=1 " 让注释符与语句之间留一个空格
 
@@ -768,10 +860,7 @@ let NERD_c_alt_style=1
 
 "}}}
 
-"F8单独切换打开NERD_tree ( F8 )
-
-"{{{
-
+"F8单独切换打开NERD_tree ( F8 ) {{{
 "-----------------------------------------------------------------
 
 " plugin - NERD_tree.vim 以树状方式浏览系统中的文件和目录
@@ -863,8 +952,7 @@ endfunction
 nmap <F8> :call ToggleNERDTreeAndTagbar()<CR>
 ""}}}
 
-"vim折叠功能
-""{{{
+"vim折叠功能 {{{
 
 "折叠方式,可用选项 'foldmethod' 来设定折叠方式：set fdm=***
 
@@ -934,8 +1022,7 @@ set fdm=marker
 
 "}}}
 
-"文件比较
-""{{{
+"文件比较 {{{
 
 ":vertical diffsplit FILE_RIGHT "与已打开的文件进行比较
 
