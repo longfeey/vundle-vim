@@ -524,7 +524,7 @@ set tags=tags;
 
 let g:autocscope_menus=0
 "是否使用 quickfix 窗口来显示 cscope 结果
-set cscopequickfix=s-,g-,d-,c-,t-,e-,f-,i-
+" set cscopequickfix=s-,g-,d-,c-,t-,e-,f-,i-
 
 "'csto' 被设为 0，cscope 数据库先 被搜索，搜索失败的情况下在搜索标签文件
 "设定了 'cscopetag'，这样所有的 :tag 命令就会实际上调用 :cstag。这包括 :tag、Ctrl-] 及 vim -t。
