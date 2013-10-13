@@ -30,7 +30,6 @@ Bundle 'majutsushi/tagbar'
 Bundle 'tag_in_new_tab'
 Bundle 'autoload_cscope.vim'
 Bundle 'CmdlineComplete'
-Bundle 'xptemplate'
 Bundle 'neocomplcache'
 Bundle 'Rip-Rip/clang_complete'
 Bundle 'osyo-manga/neocomplcache-clang_complete'
@@ -46,13 +45,9 @@ Bundle 'Conque-Shell'
 
 
 " 快速导航文件
-Bundle 'wincent/Command-T'
 Bundle 'autopreview'
 Bundle 'mbbill/echofunc.git'
 Bundle 'grep.vim'
-Bundle 'a.vim'
-Bundle 'lookupfile'
-Bundle 'OmniTags'
 "Bundle 'vim-scripts/SrcExpl.git'
 Bundle 'wesleyche/Trinity.git'
 Bundle 'wesleyche/SrcExpl.git'
@@ -64,12 +59,8 @@ Bundle 'FuzzyFinder'
 Bundle 'The-NERD-Commenter'
 Bundle 'mattn/zencoding-vim.git'
 Bundle 'FencView.vim'
-Bundle 'CRefVim'
-Bundle 'c.vim'
 Bundle 'CCTree'
-Bundle 'OmniCppComplete'
 Bundle 'Tabular'
-Bundle 'sketch.vim'
 
 " 智能文件管理
 Bundle 'The-NERD-tree'
@@ -90,12 +81,16 @@ Bundle 'headerGatesAdd.vim'
 Bundle 'ShowMarks'
 Bundle 'Lokaltog/vim-powerline'
 
-" for my plugin
+" 编程插件 {{{
 " 代码段补全
+Bundle 'xptemplate'
 Bundle 'snipMate'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'matchit.zip'
-Bundle 'ervandew/supertab.git'
+Bundle 'a.vim'
+Bundle 'lookupfile'
+Bundle 'OmniTags'
+""}}}
 
 " 智能打开文件的插件
 Bundle 'shemerey/vim-peepopen.git'
@@ -145,6 +140,10 @@ nmap <silent> <leader>cdf :cd %:h<cr>:pwd<cr>
 set pastetoggle=<F2>
 " set the time(ms) break to refresh the preview window, I recommend 500ms~1000ms with good experience
 set updatetime=500
+
+" ack 快速查找，类似grep,但可以
+" ubuntu install: sudo apt-get install ack-grep
+let g:ackprg="/usr/bin/ack-grep -H --nogroup --column"
 
 "/<C-R><C-W> : 把单个<cword>单词放入搜索或者命令行
 nnoremap <silent> <F3> :Grep<CR>
@@ -795,6 +794,12 @@ let g:neocomplcache_force_overwrite_completefunc=1
 " clang_complete option
 let g:clang_complete_auto=1
 
+""}}}
+
+" xptemplate 配置 {{{
+let g:xptemplate_vars="$author=Yanfeilong"
+let g:xptemplate_vars="$email=longfeey@msn.com"
+let g:xptemplate_vars = "SParg="
 ""}}}
 
 " 每行超过80个的字符用下划线标示
