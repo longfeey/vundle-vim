@@ -1,7 +1,13 @@
 "~/.vimrc (configuration file for vim only)
+"vim 插件使用bundle + git 进行管理
+"安装插件:
+" :BundleInstall
+"更新插件:
+" :BundleInstall!
+"卸载不在列表中的插件:
+" :BundleClean
 
-"vundle begin
-filetype off                   " required!
+filetype off
 
 " Man.vim
 source $VIMRUNTIME/ftplugin/man.vim
@@ -12,28 +18,22 @@ set rtp+=~/.vim/bundle/vundle/
 set runtimepath+=$GOROOT/misc/vim
 " set runtimepath+=~/.vim/bundle/gocode/vim
 call vundle#rc()
+
 " Vim plugin vundle manage {{{
 " let Vundle manage Vundle
 " required!
 Bundle 'gmarik/vundle'
 
 " Bundle 'nsf/gocode', {'rtp': 'vim'}
+" go 语言自动完成插件
 Bundle 'nsf/gocode'
-" Bundle 'Shougo/neocomplcache'
-" if !exists('g:neocomplcache_omni_patterns')
-		" let g:neocomplcache_omni_patterns = {}
-	" endif
-	" let g:neocomplcache_omni_patterns.go = '\h\w*'
-
 Bundle 'STL-improved'
 Bundle 'majutsushi/tagbar'
 Bundle 'tag_in_new_tab'
-Bundle 'autoload_cscope.vim'
 Bundle 'CmdlineComplete'
-Bundle 'neocomplcache'
-Bundle 'Rip-Rip/clang_complete'
-Bundle 'osyo-manga/neocomplcache-clang_complete'
-Bundle 'genutils'
+
+" 查找文件的插件
+Bundle 'ctrlp.vim'
 Bundle 'kien/ctrlp.vim'
 Bundle 'ack.vim'
 Bundle 'bash-support.vim'
@@ -42,7 +42,6 @@ Bundle 'adah1972/tellenc.git'
 Bundle 'translate.vim'
 Bundle 'bufexplorer.zip'
 Bundle 'Conque-Shell'
-
 
 " 快速导航文件
 Bundle 'autopreview'
@@ -55,14 +54,11 @@ Bundle 'minibufexpl.vim'
 Bundle 'L9'
 Bundle 'FuzzyFinder'
 
-" 代码注释
-Bundle 'The-NERD-Commenter'
-Bundle 'mattn/zencoding-vim.git'
+" 自动识别文件编码
 Bundle 'FencView.vim'
 Bundle 'CCTree'
-Bundle 'Tabular'
 
-" 智能文件管理
+" 必不可少，在VIM的编辑窗口树状显示文件目录
 Bundle 'The-NERD-tree'
 Bundle 'tpope/vim-fugitive.git'
 Bundle 'tpope/vim-rails.git'
@@ -83,16 +79,48 @@ Bundle 'Lokaltog/vim-powerline'
 
 " 编程插件 {{{
 " 代码段补全
-" Bundle 'xptemplate'
-Bundle 'snipMate'
+
+" 让代码更加易于纵向排版，以=或,符号对齐
+Bundle 'Tabular'
+
+Bundle 'autoload_cscope.vim'
+
+" 代码注释
+Bundle 'The-NERD-Commenter'
+
+" 神级插件，ZenCoding可以让你以一种神奇而无比爽快的感觉写HTML、CSS
+Bundle 'mattn/zencoding-vim.git'
+" JS代码格式化插件
+Bundle '_jsbeautify'
+
+" 用全新的方式在文档中高效的移动光标，革命性的突破
 Bundle 'Lokaltog/vim-easymotion'
+
+" 显示行末的空格；
+Bundle 'ShowTrailingWhitespace'
+
+" 在()、""、甚至HTML标签之间快速跳转；
 Bundle 'matchit.zip'
 Bundle 'a.vim'
+
+Bundle 'genutils'
+" 文件查找
 Bundle 'lookupfile'
 Bundle 'OmniTags'
+" Bundle 'neocomplcache'
+" Bundle 'osyo-manga/neocomplcache-clang_complete'
+" Bundle 'xptemplate'
+" Bundle 'snipMate'
+" Bundle 'Rip-Rip/clang_complete'
+
+" 解放生产力的神器，简单配置，就可以按照自己的风格快速输入大段代码。比xptemplate,snipMate
+" 更优秀
+Bundle 'SirVer/ultisnips.git'
+
+" 如今最好的自动VIM自动补全插件
 Bundle 'Valloric/YouCompleteMe'
 Bundle 'scrooloose/syntastic'
-Bundle 'SirVer/ultisnips.git'
+
 ""}}}
 
 " 智能打开文件的插件
@@ -108,10 +136,6 @@ Bundle 'Townk/vim-autoclose'
 "Bundle 'ColorSamplerPack'
 Bundle 'ScrollColors'
 
-" non github repos
-" autocomplete.match.pair.vim,这个安装完必须在.vim/bundle/449512/目录下创建plugin目录并在其下创建软链接指向autocomplete.match.pair.vim,否则不工作,另外不知为何(号不会自动完成配对
-Bundle 'git://gist.github.com/449512.git'
-" ...
 filetype plugin indent on     " required!
 "vundle end
 ""}}}
@@ -801,13 +825,9 @@ nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
 
 " " YouCompleteMe 代码补全杀手锏{{{
 let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
-""}}}
-
-" xptemplate 配置 {{{
-" let g:xptemplate_vars="$author=Yanfeilong"
-" let g:xptemplate_vars="$email=longfeey@msn.com"
-" let g:xptemplate_vars = "SParg="
-""}}}
+"set YouCompleteMe trigger key
+let g:ycm_key_list_select_completion = ['<c-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<c-p>', '<Up>']
 
 " 每行超过80个的字符用下划线标示
 au BufRead,BufNewFile *.asm,*.c,*.cpp,*.java,*.cs,*.sh,*.lua,*.pl,*.pm,*.py,*.rb,*.hs,*.vim 2match Underlined /.\%81v/
