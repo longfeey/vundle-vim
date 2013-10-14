@@ -83,13 +83,16 @@ Bundle 'Lokaltog/vim-powerline'
 
 " 编程插件 {{{
 " 代码段补全
-Bundle 'xptemplate'
+" Bundle 'xptemplate'
 Bundle 'snipMate'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'matchit.zip'
 Bundle 'a.vim'
 Bundle 'lookupfile'
 Bundle 'OmniTags'
+Bundle 'Valloric/YouCompleteMe'
+Bundle 'scrooloose/syntastic'
+Bundle 'SirVer/ultisnips.git'
 ""}}}
 
 " 智能打开文件的插件
@@ -638,168 +641,172 @@ nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
 
 "set completeopt=menu,longest
 
-let g:acp_enableAtStartup = 0
+" let g:acp_enableAtStartup = 0
+" 
+" " Use neocomplcache.
+" 
+" let g:neocomplcache_enable_at_startup = 1
+" 
+" " Use smartcase.
+" 
+" let g:neocomplcache_enable_smart_case = 1
+" 
+" " Use camel case completion.
+" 
+" let g:neocomplcache_enable_camel_case_completion = 1 "支持驼峰格式匹配关键词
+" 
+" " Use underbar completion.
+" 
+" let g:neocomplcache_enable_underbar_completion = 1 "支持下划线分割的关键词
+" 
+" " Set minimum syntax keyword length.
+" 
+" let g:neocomplcache_min_syntax_length = 3
+" 
+" let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+" 
+" let g:neocomplcache_enable_auto_delimiter = 1
+" 
+" let g:neocomplcache_disable_auto_complete = 1 "设置NeoComplCache不自动弹出补全列表
+" 
+" let g:neocomplcache_enable_wildcard = 1
+" 
+" " Define dictionary.
+" 
+" let g:neocomplcache_dictionary_filetype_lists = {
+"     \ 'default' : '',
+"     \ 'vimshell' : $HOME.'/.vimshell_hist',
+"     \ 'scheme' : $HOME.'/.gosh_completions',
+"     \ 'css' : $VIMFILES.'/dict/css.dic',
+"     \ 'php' : $VIMFILES.'/dict/php.dic',
+"     \ 'javascript' : $VIMFILES.'/dict/javascript.dic'
+"     \ }
+" 
+" " Define keyword.
+" 
+" if !exists('g:neocomplcache_keyword_patterns')
+" 
+" let g:neocomplcache_keyword_patterns = {}
+" 
+" endif
+" 
+" let g:neocomplcache_keyword_patterns['default'] = '/h/w*'
+" 
+" "let g:neocomplcache_enable_auto_select = 1
+" 
+" let g:neocomplcache_enable_caching_message=1 "显示启动进度
+" 
+" 
+" " Enable omni completion.
+" 
+" autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+" 
+" autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+" 
+" autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+" 
+" autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+" 
+" autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+" 
+" autocmd filetype cpp setlocal omnifunc=omni#cpp#complete#main
+" 
+" autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+" autocmd FileType c setlocal omnifunc=ccomplete#Complete
+" 
+" "Enable heavy omni completion.
+" 
+" if !exists('g:neocomplcache_omni_patterns')
+" 
+" let g:neocomplcache_omni_patterns = {}
+" 
+" endif
+" 
+" let g:neocomplcache_omni_patterns.ruby = '[^. */t]/./w*/|/h/w*::'
+" 
+" 
+" let g:neocomplcache_omni_patterns.php = '[^. /t]->/h/w*/|/h/w*::'
+" 
+" let g:neocomplcache_omni_patterns.c = '/%(/./|->/)/h/w*'
+" 
+" let g:neocomplcache_omni_patterns.cpp = '/h/w*/%(/./|->/)/h/w*/|/h/w*::'
+" 
+" 
+" "映射:
+" 
+" "inoremap neocomplcache#manual_filename_complete()
+" 
+" "inoremap neocomplcache#manual_filename_complete()
+" 
+" "inoremap pumvisible() ? "/" : neocomplcache#manual_keyword_complete()
+" 
+" "inoremap neocomplcache#close_popup()
+" 
+" "inoremap neocomplcache#cancel_popup()
+" 
+" "inoremap neocomplcache#undo_completion()
+" 
+" "inoremap neocomplcache#complete_common_string()
+" 
+" " 函数说明
+" " pumvisible（） 如果弹出菜单可见，返回非零，不然返回零。
+" 
+" " neocomplcache#undo_completion  这个看名字就知道，做一次undo，取消补全。
+" 
+" " neocomplcache#close_popup() 这个是用候选字补全后关闭弹出框
+" 
+" " neocomplcache#cancel_popup()  这个是什么也不做，直接关闭弹出框
+" 
+" " 方法1
+" " let g:neocomplcache_enable_quick_match = 1 “For input-saving, this variable
+" " controls whether you can  choose a candidate with a alphabet or number
+" " displayed beside a candidate after '-'.  When you input 'ho-a',
+" " neocomplcache will select candidate 'a'.
+" 
+" " 方法2
+" " CTRL-N,CTRL-P：
+" " 这两个组合键可以替代TAB的功能，向上或者向下选择你的候选字
+" "
+" " 方法3
+" " 使用SPACE:
+" " inoremap <expr><space>  pumvisible() ? neocomplcache#close_popup() .
+" " "\<SPACE>" : "\<SPACE>"
+" "
+" " 用SPACE自动旋转当前的候选字，并附加一个空格。这个才是真正无阻碍的输入方式。在SPACE面前什么<TAB>,<ENTER>都是浮云。neocomplcache
+" " 的作者居然都没想到这点 。给出的推荐配置中还在纠结于 <TAB>,<ENTER>。这也是
+" " VISUAL ASSIST X推荐的方式。
+" 
+" " Recommended key-mappings.
+" " <CR>: close popup and save indent.
+" inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
+" " <TAB>: completion.
+" "inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"       "取消 <TAB> 的相关映射*******************
+" " <C-h>, <BS>: close popup and delete backword char.
+" inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+" inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+" inoremap <expr><C-y>  neocomplcache#close_popup()
+" inoremap <expr><C-e>  neocomplcache#cancel_popup()
+" "inoremap <expr><Enter>  pumvisible() ? neocomplcache#close_popup()."\<C-n>" : "\<Enter>"
+" inoremap <expr><Enter>  pumvisible() ? "\<C-Y>" : "\<Enter>"    "赋予 <Enter> <C-Y> 的功能。 <C-Y> 的功能是选择选项之后关闭弹出"                          "框。这么配置之后，同时也把回车键的换行效果取消了，免得选择之后光标却在下一行********************
+" "" 类似于AutoComplPop用法 .
+" let g:neocomplcache_enable_auto_select = 1
+" 
+" " use neocomplcache & clang_complete
+" " neocomplcache option
+" let g:neocomplcache_force_overwrite_completefunc=1
+" " clang_complete option
+" let g:clang_complete_auto=1
+" 
+" ""}}}
 
-" Use neocomplcache.
-
-let g:neocomplcache_enable_at_startup = 1
-
-" Use smartcase.
-
-let g:neocomplcache_enable_smart_case = 1
-
-" Use camel case completion.
-
-let g:neocomplcache_enable_camel_case_completion = 1 "支持驼峰格式匹配关键词
-
-" Use underbar completion.
-
-let g:neocomplcache_enable_underbar_completion = 1 "支持下划线分割的关键词
-
-" Set minimum syntax keyword length.
-
-let g:neocomplcache_min_syntax_length = 3
-
-let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-
-let g:neocomplcache_enable_auto_delimiter = 1
-
-let g:neocomplcache_disable_auto_complete = 1 "设置NeoComplCache不自动弹出补全列表
-
-let g:neocomplcache_enable_wildcard = 1
-
-" Define dictionary.
-
-let g:neocomplcache_dictionary_filetype_lists = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions',
-    \ 'css' : $VIMFILES.'/dict/css.dic',
-    \ 'php' : $VIMFILES.'/dict/php.dic',
-    \ 'javascript' : $VIMFILES.'/dict/javascript.dic'
-    \ }
-
-" Define keyword.
-
-if !exists('g:neocomplcache_keyword_patterns')
-
-let g:neocomplcache_keyword_patterns = {}
-
-endif
-
-let g:neocomplcache_keyword_patterns['default'] = '/h/w*'
-
-"let g:neocomplcache_enable_auto_select = 1
-
-let g:neocomplcache_enable_caching_message=1 "显示启动进度
-
-
-" Enable omni completion.
-
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
-autocmd filetype cpp setlocal omnifunc=omni#cpp#complete#main
-
-autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-autocmd FileType c setlocal omnifunc=ccomplete#Complete
-
-"Enable heavy omni completion.
-
-if !exists('g:neocomplcache_omni_patterns')
-
-let g:neocomplcache_omni_patterns = {}
-
-endif
-
-let g:neocomplcache_omni_patterns.ruby = '[^. */t]/./w*/|/h/w*::'
-
-
-let g:neocomplcache_omni_patterns.php = '[^. /t]->/h/w*/|/h/w*::'
-
-let g:neocomplcache_omni_patterns.c = '/%(/./|->/)/h/w*'
-
-let g:neocomplcache_omni_patterns.cpp = '/h/w*/%(/./|->/)/h/w*/|/h/w*::'
-
-
-"映射:
-
-"inoremap neocomplcache#manual_filename_complete()
-
-"inoremap neocomplcache#manual_filename_complete()
-
-"inoremap pumvisible() ? "/" : neocomplcache#manual_keyword_complete()
-
-"inoremap neocomplcache#close_popup()
-
-"inoremap neocomplcache#cancel_popup()
-
-"inoremap neocomplcache#undo_completion()
-
-"inoremap neocomplcache#complete_common_string()
-
-" 函数说明
-" pumvisible（） 如果弹出菜单可见，返回非零，不然返回零。
-
-" neocomplcache#undo_completion  这个看名字就知道，做一次undo，取消补全。
-
-" neocomplcache#close_popup() 这个是用候选字补全后关闭弹出框
-
-" neocomplcache#cancel_popup()  这个是什么也不做，直接关闭弹出框
-
-" 方法1
-" let g:neocomplcache_enable_quick_match = 1 “For input-saving, this variable
-" controls whether you can  choose a candidate with a alphabet or number
-" displayed beside a candidate after '-'.  When you input 'ho-a',
-" neocomplcache will select candidate 'a'.
-
-" 方法2
-" CTRL-N,CTRL-P：
-" 这两个组合键可以替代TAB的功能，向上或者向下选择你的候选字
-"
-" 方法3
-" 使用SPACE:
-" inoremap <expr><space>  pumvisible() ? neocomplcache#close_popup() .
-" "\<SPACE>" : "\<SPACE>"
-"
-" 用SPACE自动旋转当前的候选字，并附加一个空格。这个才是真正无阻碍的输入方式。在SPACE面前什么<TAB>,<ENTER>都是浮云。neocomplcache
-" 的作者居然都没想到这点 。给出的推荐配置中还在纠结于 <TAB>,<ENTER>。这也是
-" VISUAL ASSIST X推荐的方式。
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
-" <TAB>: completion.
-"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"       "取消 <TAB> 的相关映射*******************
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-inoremap <expr><C-y>  neocomplcache#close_popup()
-inoremap <expr><C-e>  neocomplcache#cancel_popup()
-"inoremap <expr><Enter>  pumvisible() ? neocomplcache#close_popup()."\<C-n>" : "\<Enter>"
-inoremap <expr><Enter>  pumvisible() ? "\<C-Y>" : "\<Enter>"    "赋予 <Enter> <C-Y> 的功能。 <C-Y> 的功能是选择选项之后关闭弹出"                          "框。这么配置之后，同时也把回车键的换行效果取消了，免得选择之后光标却在下一行********************
-"" 类似于AutoComplPop用法 .
-let g:neocomplcache_enable_auto_select = 1
-
-" use neocomplcache & clang_complete
-" neocomplcache option
-let g:neocomplcache_force_overwrite_completefunc=1
-" clang_complete option
-let g:clang_complete_auto=1
-
+" " YouCompleteMe 代码补全杀手锏{{{
+let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
 ""}}}
 
 " xptemplate 配置 {{{
-let g:xptemplate_vars="$author=Yanfeilong"
-let g:xptemplate_vars="$email=longfeey@msn.com"
-let g:xptemplate_vars = "SParg="
+" let g:xptemplate_vars="$author=Yanfeilong"
+" let g:xptemplate_vars="$email=longfeey@msn.com"
+" let g:xptemplate_vars = "SParg="
 ""}}}
 
 " 每行超过80个的字符用下划线标示
