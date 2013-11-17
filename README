@@ -13,7 +13,7 @@ cp vundle-vim/vimrc ~/.vimrc
 二.可能存在的问题：
 1)powerline乱码问题
 默认没有带字体，所以需要自己下载字体。
-在https://github.com/Lokaltog/vim-powerline/wiki/Patched-fonts 选择字体下载到~/.fonts目录即可。
+git clone https://github.com/scotu/ubuntu-mono-powerline.git下载字体到~/.fonts目录即可。
 
 2)Command-t安装问题
 错误：`require’: no such file to load — mkmf (LoadError)'

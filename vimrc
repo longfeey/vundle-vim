@@ -29,30 +29,36 @@ Bundle 'gmarik/vundle'
 Bundle 'nsf/gocode'
 Bundle 'STL-improved'
 Bundle 'majutsushi/tagbar'
-Bundle 'tag_in_new_tab'
 Bundle 'CmdlineComplete'
+Bundle 'bash-support.vim'
+Bundle 'taglist.vim'
 
 " 查找文件的插件
-Bundle 'ctrlp.vim'
 Bundle 'kien/ctrlp.vim'
 Bundle 'ack.vim'
-Bundle 'bash-support.vim'
+Bundle 'lookupfile'
+Bundle 'gtags.vim'
+Bundle 'OmniTags'
+
+"Slimv is a SWANK client for Vim
 Bundle 'slimv.vim'
-Bundle 'adah1972/tellenc.git'
 Bundle 'translate.vim'
 Bundle 'bufexplorer.zip'
-Bundle 'Conque-Shell'
+
+"在 Vim 中运行 Shell
+Bundle 'vim-scripts/Conque-Shell'
+Bundle 'EasyGrep'
 
 " 快速导航文件
 Bundle 'autopreview'
 Bundle 'mbbill/echofunc.git'
 Bundle 'grep.vim'
-"Bundle 'vim-scripts/SrcExpl.git'
-Bundle 'wesleyche/Trinity.git'
+
+" exploring the source code based on "tags"
+" and it works like the context window of "Source Insight"
 Bundle 'wesleyche/SrcExpl.git'
+Bundle 'wesleyche/Trinity.git'
 Bundle 'minibufexpl.vim'
-Bundle 'L9'
-Bundle 'FuzzyFinder'
 
 " 自动识别文件编码
 Bundle 'FencView.vim'
@@ -60,20 +66,20 @@ Bundle 'CCTree'
 
 " 必不可少，在VIM的编辑窗口树状显示文件目录
 Bundle 'The-NERD-tree'
+
+" git wrapper插件
 Bundle 'tpope/vim-fugitive.git'
 Bundle 'tpope/vim-rails.git'
 Bundle 'LargeFile'
 
 "under linux need exec 'dos2unix ~/.vim/bundle/QFixToggle/plugin/qfixtoggle.vim'
 Bundle 'QFixToggle'
-Bundle 'Color-Sampler-Pack'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'txt.vim'
 Bundle 'mru.vim'
 Bundle 'YankRing.vim'
 Bundle 'tpope/vim-surround.git'
 Bundle 'DoxygenToolkit.vim'
-Bundle 'headerGatesAdd.vim'
 Bundle 'ShowMarks'
 Bundle 'Lokaltog/vim-powerline'
 
@@ -83,10 +89,14 @@ Bundle 'Lokaltog/vim-powerline'
 " 让代码更加易于纵向排版，以=或,符号对齐
 Bundle 'Tabular'
 
+" 现在使用global 的gtags_cscope替代cscope
 Bundle 'autoload_cscope.vim'
 
 " 代码注释
 Bundle 'The-NERD-Commenter'
+
+"c/c++防止头文件重复包含的插件
+Bundle 'headerGatesAdd.vim'
 
 " 神级插件，ZenCoding可以让你以一种神奇而无比爽快的感觉写HTML、CSS
 Bundle 'mattn/zencoding-vim.git'
@@ -103,15 +113,7 @@ Bundle 'ShowTrailingWhitespace'
 Bundle 'matchit.zip'
 Bundle 'a.vim'
 
-Bundle 'genutils'
-" 文件查找
-Bundle 'lookupfile'
-Bundle 'OmniTags'
-" Bundle 'neocomplcache'
-" Bundle 'osyo-manga/neocomplcache-clang_complete'
-" Bundle 'xptemplate'
-" Bundle 'snipMate'
-" Bundle 'Rip-Rip/clang_complete'
+Bundle 'vim-scripts/genutils'
 
 " 解放生产力的神器，简单配置，就可以按照自己的风格快速输入大段代码。比xptemplate,snipMate
 " 更优秀
@@ -128,13 +130,23 @@ Bundle 'shemerey/vim-peepopen.git'
 
 " write HTML code faster
 Bundle 'rstacruz/sparkup.git'
+
 Bundle 'vim-surround.git'
 
 " 多重色彩括号
 Bundle 'vim-scripts/Rainbow-Parenthesis.git'
+
+Bundle 'vim-scripts/Colour-Sampler-Pack'
 Bundle 'Townk/vim-autoclose'
-"Bundle 'ColorSamplerPack'
-Bundle 'ScrollColors'
+
+" 过时的优秀插件, 暂时用新插件替代 {{{
+" Bundle 'vim-snipmate'
+" Bundle 'supertab'
+" Bundle 'neocomplcache'
+" Bundle 'osyo-manga/neocomplcache-clang_complete'
+" Bundle 'xptemplate'
+" Bundle 'Rip-Rip/clang_complete'
+" }}}
 
 filetype plugin indent on     " required!
 "vundle end
@@ -144,10 +156,37 @@ filetype plugin indent on     " required!
 let mapleader=","   " 映射快捷键开始命令,缺省为'/'
 let g:mapleader=","
 
-nmap <leader>w :w!<cr>  " 快速保存
-map <leader>q :q<cr>    " 快速退出
-map <leader>wq :wq<cr>  " 快速保存并退出
+nmap <leader>w :w!<cr>              " 快速保存
+map  <leader>q :q<cr>               " 快速退出
+map  <leader>wq :wq<cr>             " 快速保存并退出
 nmap <silent> <leader><cr> :noh<cr> " Fast remove highlight search
+nmap tl :Tlist<cr>                  " 打开taglist
+
+map  <C-A> ggVG$"+y
+map  <C-w> <C-w>w
+imap <C-k> <C-y>,
+imap <C-j> <ESC>
+vmap <C-c> "+y						" 选中状态下 Ctrl+c 复制
+imap <C-v> <Esc>"+pa
+imap <C-a> <Esc>^
+imap <C-e> <Esc>$
+
+" Switching between buffers.
+nnoremap <C-h> <C-W>h
+nnoremap <C-j> <C-W>j
+nnoremap <C-k> <C-W>k
+nnoremap <C-l> <C-W>l
+inoremap <C-h> <Esc><C-W>h
+inoremap <C-j> <Esc><C-W>j
+inoremap <C-k> <Esc><C-W>k
+inoremap <C-l> <Esc><C-W>l
+
+"C，C++ 按F5编译运行
+"map  <F5> :call CompileRunGcc()<CR>
+"C,C++的调试
+"map <F8> :call Rungdb()<CR>
+nmap <F8> :call ToggleNERDTreeAndTagbar()<CR>
+map  <F6> :call FormartSrc()<CR><CR>   "代码格式优化化,需要安装astyle
 
 " 快速打开 ipython
 " map <leader>py :ConqueTermSplit ipython<CR>
@@ -157,7 +196,7 @@ nmap <silent> <leader><cr> :noh<cr> " Fast remove highlight search
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " Fast editing of the .vimrc
-map <leader>e :e! ~/.vimrc<cr>
+map  <leader>e :e! ~/.vimrc<cr>
 autocmd! BufWritePost .vimrc source $HOME/.vimrc    " .vimrc编辑后重载
 " "cd" to change to open directory.
 let OpenDir=system("pwd")
@@ -177,8 +216,8 @@ nnoremap <silent> <F3> :Grep<CR>
 " nnoremap <silent> <F4> :Rgrep<CR>
 nmap  <F4> :vimgrep /<C-R>=expand("<cword>")<cr>/ **/*.c **/*.h<cr><C-o>:cw<cr>
 " make you could press F6 key to enable or disable the preview window, you can also set to other favorite hotkey here
-nnoremap <F6> :AutoPreviewToggle<CR>
-inoremap <F6> <ESC>:AutoPreviewToggle<CR>i
+"nnoremap <F6> :AutoPreviewToggle<CR>
+"inoremap <F6> <ESC>:AutoPreviewToggle<CR>i
 
 "map <F7> :!ctags -R --c++-kinds=+px --fields=+ilaS --extra=+q <cr>
 "map <F9> :!find `pwd` \( -name .repo -o -name .git -o -name .svn -o -name cts -o -name out \) -prune -o -type f -iregex '.*\.\(c\|s\|cpp\|java\|h\)' >cscope.files <CR>
@@ -189,16 +228,6 @@ nmap <F12> :!cscope -bqk -i cscope.files <cr>
 map <leader>t2 :setlocal shiftwidth=2<cr>
 map <leader>t4 :setlocal shiftwidth=4<cr>
 map <leader>t8 :setlocal shiftwidth=8<cr>
-
-" Switching between buffers.
-nnoremap <C-h> <C-W>h
-nnoremap <C-j> <C-W>j
-nnoremap <C-k> <C-W>k
-nnoremap <C-l> <C-W>l
-inoremap <C-h> <Esc><C-W>h
-inoremap <C-j> <Esc><C-W>j
-inoremap <C-k> <Esc><C-W>k
-inoremap <C-l> <Esc><C-W>l
 
 " Set Up and Down non-linewise
 noremap <Up> gk
@@ -223,6 +252,64 @@ vnoremap <silent> # :call VisualSearch('b')<CR>
 " When you press gv you vimgrep after the selected text
 vnoremap <silent> gv :call VisualSearch('gv')<CR>
 map <leader>g :vimgrep // **/*.<left><left><left><left><left><left><left>
+"}}}
+
+"  自定义函数 {{{
+func! CompileRunGcc()
+        exec "w"
+        if &filetype == 'c'
+                exec "!g++ % -o %<"
+                exec "!time ./%<"
+        elseif &filetype == 'cpp'
+                exec "!g++ % -o %<"
+                exec "!time ./%<"
+        elseif &filetype == 'java'
+                exec "!javac %"
+                exec "!time java %<"
+        elseif &filetype == 'sh'
+                :!time bash %
+        elseif &filetype == 'python'
+                exec "!time python2.7 %"
+    elseif &filetype == 'html'
+        exec "!firefox % &"
+    elseif &filetype == 'go'
+"        exec "!go build %<"
+        exec "!time go run %"
+    elseif &filetype == 'mkd'
+        exec "!~/.vim/markdown.pl % > %.html &"
+        exec "!firefox %.html &"
+        endif
+endfunc
+
+func! Rungdb()
+        exec "w"
+        exec "!g++ % -g -o %<"
+        exec "!gdb ./%<"
+endfunc
+
+"定义FormartSrc()
+func! FormartSrc()
+    exec "w"
+    if &filetype == 'c'
+        exec "!astyle --style=ansi -a --suffix=none %"
+    elseif &filetype == 'cpp' || &filetype == 'hpp'
+        exec "r !astyle --style=ansi --one-line=keep-statements -a --suffix=none %> /dev/null 2>&1"
+    elseif &filetype == 'perl'
+        exec "!astyle --style=gnu --suffix=none %"
+    elseif &filetype == 'py'||&filetype == 'python'
+        exec "r !autopep8 -i --aggressive %"
+    elseif &filetype == 'java'
+        exec "!astyle --style=java --suffix=none %"
+    elseif &filetype == 'jsp'
+        exec "!astyle --style=gnu --suffix=none %"
+    elseif &filetype == 'xml'
+        exec "!astyle --style=gnu --suffix=none %"
+    else
+        exec "normal gg=G"
+        return
+    endif
+    exec "e! %"
+endfunc
 
 function! RunShell(Msg, Shell)
     echo a:Msg . '...'
@@ -241,8 +328,8 @@ map <leader>bd :Bclose<cr>
 map <leader>ba :1,300 bd!<cr>
 
 " Use the arrows to something usefull
-map <right> :bn<cr>
-map <left> :bp<cr>
+"map <right> :bn<cr>
+"map <left> :bp<cr>
 
 " Tab configuration
 map <leader>tn :tabnew %<cr>
@@ -333,6 +420,10 @@ set background=dark
 """""""""""""""""""""""""""""""""""""
 " termencoding: Vim 所工作 的终端
 " 下面这句只影响普通模式 (非图形界面) 下的 Vim。
+set noexpandtab				" 不要用空格代替制表符
+set smarttab				" 在行和段开始处使用制表符
+set viminfo+=!			    " 保存全局变量
+set iskeyword+=_,$,@,%,#,-  " 带有如下符号的单词不要被换行分割
 let &termencoding=&encoding
 
 set ambiwidth=double        " ambiwidth 默认值为 single。在其值为 single 时，
@@ -350,8 +441,15 @@ set display=lastline        " 长行不能完全显示时显示当前屏幕能�
 set formatoptions=tcqro     " 使得注释换行时自动加上前导的空格和星号
 set hidden                  " 允许在有未保存的修改时切换缓冲区，
                             " 此时的修改由切换由 vim 负责保存
-set history=500             " 设置冒号命令和搜索命令的命令历史列表的长度为 100
-"set mouse=a                " 设定在任何模式下鼠标都可用
+set history=1000            " 设置冒号命令和搜索命令的命令历史列表的长度为 100
+set mouse=a                 " 设定在任何模式下鼠标都可用
+set mousemodel=popup
+set selection=exclusive
+set selectmode=mouse,key
+set cul						"高亮光标所在行
+set cuc						"高亮光标所在列
+set langmenu=zh_CN.UTF-8
+set helplang=cn
 set nobackup                " 覆盖文件时不备份
 set nocompatible            " 设定 gvim 运行在增强模式下
 set noignorecase            " 默认区分大小写
@@ -363,8 +461,8 @@ set wrap                    " 自动换行显示
 "set autochdir              " 自动切换当前目录为当前文件所在的目录
 set autoread                " 文件被其他程序修改时自动载入
 syntax on                   " 自动语法高亮
-"set noswapfile             " 不使用swap文件
-set swapfile
+set noswapfile              " 不使用swap文件
+"set swapfile
 set noerrorbells            " 关闭遇到错误时的声音提示
 set writebackup             " 写备份但关闭vim后自动删除
 set novisualbell            " 不要闪烁
@@ -425,6 +523,7 @@ endif
                             " %L    当前文件总行数
 
 " vim-powerline statubar related
+let g:Powerline_colorscheme = 'solarized256'
 set laststatus=2 " always have status-line'
 let g:Powerline_symbols = 'fancy'
 set statusline=%F%m%r%h%w\ %{&ff}\ %Y\ [ascii:%b\ hex:0x\%02.2B]\ [%{(&fenc\ ==\ \"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %=%l/%L,%v\ %p%%
@@ -440,10 +539,10 @@ set tabstop=4
 set softtabstop=4
 " set expandtab               " 使用空格来替换tab
 " auto expand tab to blanks
-autocmd FileType c,cpp set expandtab
-"set list
+" autocmd FileType c,cpp set expandtab
+set list
 "set listchars=tab:\|\ ,   " 显示Tab符，使用一高亮竖线代替
-"set listchars=tab:▸\ ,eol:¬
+set listchars=tab:▸\ ,eol:¬
 
 " Indent related
 " http://vimcdoc.sourceforge.net/doc/indent.html
@@ -483,16 +582,18 @@ let showmarks_enable = 0 " disable showmarks when vim startup
 let showmarks_include = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 let showmarks_ignore_type = "hqm" " help, Quickfix, non-modifiable
 
-" Tagbar options
-let g:tagbar_width = 30
+" }}}
 
+" Tagbar options {{{
+let g:tagbar_width = 30
 let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
 let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
 let g:DoxygenToolkit_authorName="longfeey"
 let g:DoxygenToolkit_versionString="0.1.00"
 let g:DoxygenToolkit_briefTag_funcName="yes"
 "autocmd BufNewFile *.{h,hpp,c,cpp} DoxAuthor
-" }}}
+
+"}}}
 
 " {{{ lookupfile插件默认会使用ctags产生的tag来查找，效率很低,使用下面脚本生成filenametags
 
@@ -510,7 +611,7 @@ let g:LookupFile_AllowNewFiles = 0              "不允许创建不存在的文�
 if filereadable("./filenametags")                "设置tag文件的名字
 let g:LookupFile_TagExpr ='"./filenametags"'
 endif
-let g:LookupFile_FileFilter ='/.class$/|/.o$/|/.obj$/|/.exe$/|/.jar$/|/.zip$/|/.war$/|/.ear$'
+let g:LookupFile_FileFilter ='/.class$/|/.o$/|/.obj$/|/.exe$/|/.jar$/|/.zip$/|/.war$/|/.cmd$/|/.sw[opn]$/|/.ear$'
 
 " lookup file with ignore case
 function! LookupFile_IgnoreCaseFunc(pattern)
@@ -541,103 +642,192 @@ map <silent> <leader>ll :LUBufs<cr>
 map <silent> <leader>lw :LUWalk<cr>
 " }}}
 
-"ctrlp
+"ctrlp {{{
 let g:ctrlp_user_command = 'find %s -type f'
+"}}}
 
 set tags=tags;
 
 " 源码阅读插件 : Cscope_map.vim {{{
+"let g:autocscope_menus=0
+""是否使用 quickfix 窗口来显示 cscope 结果
+"" set cscopequickfix=s-,g-,d-,c-,t-,e-,f-,i-
+""'csto' 被设为 0，cscope 数据库先 被搜索，搜索失败的情况下在搜索标签文件
+""设定了 'cscopetag'，这样所有的 :tag 命令就会实际上调用 :cstag。这包括 :tag、Ctrl-] 及 vim -t。
+""结果是一般的 tag 命令不仅搜索由 ctags 产生的标签文 件，同时也搜索 cscope 数据库,但是好像有bug,二者共存时有的无法搜索
+""------- 下面是对cscope_map.vim文件的部分翻译
+"
+"""0 或 s 查找本 C 符号(可以跳过注释)
+"
+"""1 或 g 查找本定义
+"
+"""2 或 d 查找本函数调用的函数 --可以到函数的定义处
+"
+"""3 或 c 查找调用本函数的函数 --该函数被谁调用
+"
+"""4 或 t 查找本字符串
+"
+"""6 或 e 查找本 egrep 模式
+"
+"""7 或 f 查找本文件
+"
+"""8 或 i 查找包含本文件的文件
+"
+"""ctrl + o 可以返回
+"
+""" cscope使用方法
+"""下面是shell脚本，放到源码目录下运行
+"""#!/bin/sh
+"""find . -name "*.h" -o -name "*.c" -o -name "*.cc" > cscope.files
+"""cscope -bkq -i cscope.files
+"""ctags -R
+"
+"""下面是对cscope -Rbkq 的解释
+"
+"""-R: 在生成索引文件时，搜索子目录树中的代码
+"
+"""-b: 只生成索引文件，不进入cscope的界面
+"
+"""-k: 在生成索引文件时，不搜索/usr/include目录
+"
+"""-q: 生成cscope.in.out和cscope.po.out文件，加快cscope的索引速度
+"
+"
+"""1.生成一个 cscope 的数据库
+"
+"""cscope -Rbq
+"
+"""  :cs add /usr/src/linux/cscope.out /usr/src/linux/
+"
+""":cs reset : 重新初始化所有连接.
+"用法 : cs reset
+""测试（1）:cscope find g 函数名 （2） :cscope find c 函数名
+"":cw 显示多个结果
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" gtags-cscope setting
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" I use GNU global instead cscope because global is faster.
+" need install global
+" 1. install global
+" 2. copy /usr/local/share/gtags/gtags-cscope.vim gtags.vim  to
+" ~/.vim/bundle/gtags.vim/plugin,
+" no needed now with the follow function replace the gtags-cscope.vim plugin
+function! s:GtagsCscope_GtagsRoot()
+	let s:global_command = "global"
+    let cmd = s:global_command . " -pq"
+    let cmd_output = system(cmd)
+    return strpart(cmd_output, 0, strlen(cmd_output) - 1)
+endfunction
 
-let g:autocscope_menus=0
-"是否使用 quickfix 窗口来显示 cscope 结果
-" set cscopequickfix=s-,g-,d-,c-,t-,e-,f-,i-
+function! UpdateGtags(f)
+  let dir = fnamemodify(a:f, ':p:h')
+  exe 'silent !cd ' . dir . ' && global -u &> /dev/null &'
+endfunction
 
-"'csto' 被设为 0，cscope 数据库先 被搜索，搜索失败的情况下在搜索标签文件
-"设定了 'cscopetag'，这样所有的 :tag 命令就会实际上调用 :cstag。这包括 :tag、Ctrl-] 及 vim -t。
-"结果是一般的 tag 命令不仅搜索由 ctags 产生的标签文 件，同时也搜索 cscope 数据库,但是好像有bug,二者共存时有的无法搜索
-if has("cscope")
-    set csprg=/usr/bin/cscope
-    " Use both cscope and ctag
-    set cscopetag
-    " Use cscope for definition search first
-    set cscopetagorder=0
-    " add any database in current directory
-    if filereadable("cscope.out")
-        cs add cscope.out
-    " else add database pointed to by environment
-    elseif $CSCOPE_DB != ""
-        cs add $CSCOPE_DB
+"如果GTAGS存在, 则使用gtags-cscope
+"如果GTAGS不存在，则使用cscope
+function! SelectCscopeDb()
+	set nocscopeverbose				"suppress 'duplicate connection' error
+    let gtagsroot = s:GtagsCscope_GtagsRoot()
+	if (!empty(gtagsroot))
+		set cscopeprg=gtags-cscope
+		let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a'
+		exe s:command
+		au BufWritePost *.[ch] call UpdateGtags(expand('<afile>'))
+		au BufWritePost *.[ch]pp call UpdateGtags(expand('<afile>'))
+		au BufWritePost *.[ch]xx call UpdateGtags(expand('<afile>'))
+		au BufWritePost *.java call UpdateGtags(expand('<afile>'))
+		au BufWritePost *.cc call UpdateGtags(expand('<afile>'))
+	else
+		set csprg=/usr/bin/cscope
+		" Use both cscope and ctag
+		set cscopetag
+		" Use cscope for definition search first
+		set cscopetagorder=0
+		let g:autocscope_menus=0
+	    set cscopetagorder=0
+	    " add any database in current directory
+	    if filereadable("cscope.out")
+	        cs add cscope.out
+	    " else add database pointed to by environment
+	    elseif $CSCOPE_DB != ""
+	        cs add $CSCOPE_DB
+	    endif
+	    " Show msg when cscope db added
+		nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
     endif
-    " Show msg when cscope db added
+	" Show msg when cscope db added
+	"set cscopequickfix=c-,d-,e-,f-,g0,i-,s-,t-
+	"" 解决cscope与tag共存时ctrl+]有时不正常的bug
+	nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
+	nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+	set cscopeverbose
+endfunc
+
+autocmd FileType c,cpp,java,python call SelectCscopeDb()
+
+function! s:GtagsCscope()
+    "
+    " Get gtagsroot directory.
+    "
+    let gtagsroot = s:GtagsCscope_GtagsRoot()
+	if (!empty(gtagsroot))
+    "
+    " Load gtags-cscope.
+    "
+    set csprg=gtags-cscope
+"    let s:command = "cs add " . gtagsroot . "/GTAGS"
+    let s:option = ''
+"    if g:GtagsCscope_Ignore_Case == 1
+        let s:option = s:option . 'C'
+"    endif
+"    if g:GtagsCscope_Absolute_Path == 1
+        let s:option = s:option . 'a'
+"    endif
+"    if g:GtagsCscope_Keep_Alive == 1
+        let s:option = s:option . 'i'
+"    endif
+    if s:option != ''
+"        let s:command = s:command . ' . -' . s:option
+    endif
+    set nocscopeverbose
+    "let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a' . 'C'
+    let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a'
+    exe s:command
     set cscopeverbose
+    "
+    " Key mapping
+    "
+"    if g:GtagsCscope_Auto_Map == 1
+            " The following key mappings are derived from 'cscope_maps.vim'.
+            " (The 'd' command is not implemented in gtags-cscope.)
+            "
+            " normal command
+            :nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+            :nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+            ":nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+            " Using 'CTRL-spacebar', the result is displayed in new horizontal window.
+"	endif
 endif
 
-"------- 下面是对cscope_map.vim文件的部分翻译
+"if g:GtagsCscope_Auto_Load == 1
+"    call s:GtagsCscope()
+"endif
+endfunction
 
-""0 或 s 查找本 C 符号(可以跳过注释)
-
-""1 或 g 查找本定义
-
-""2 或 d 查找本函数调用的函数 --可以到函数的定义处
-
-""3 或 c 查找调用本函数的函数 --该函数被谁调用
-
-""4 或 t 查找本字符串
-
-""6 或 e 查找本 egrep 模式
-
-""7 或 f 查找本文件
-
-""8 或 i 查找包含本文件的文件
-
-""ctrl + o 可以返回
-
-nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-
-"" cscope使用方法
-""下面是shell脚本，放到源码目录下运行
-""#!/bin/sh
-""find . -name "*.h" -o -name "*.c" -o -name "*.cc" > cscope.files
-""cscope -bkq -i cscope.files
-""ctags -R
-
-""下面是对cscope -Rbkq 的解释
-
-""-R: 在生成索引文件时，搜索子目录树中的代码
-
-""-b: 只生成索引文件，不进入cscope的界面
-
-""-k: 在生成索引文件时，不搜索/usr/include目录
-
-""-q: 生成cscope.in.out和cscope.po.out文件，加快cscope的索引速度
-
-
-""1.生成一个 cscope 的数据库
-
-""cscope -Rbq
-
-""  :cs add /usr/src/linux/cscope.out /usr/src/linux/
-
-"":cs reset : 重新初始化所有连接. 用法 : cs reset
-"测试（1）:cscope find g 函数名 （2） :cscope find c 函数名
-":cw 显示多个结果
-
-" 解决cscope与tag共存时ctrl+]有时不正常的bug
-nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
-
-" VimTip 329: A map for swapping words
-" http://vim.sourceforge.net/tip_view.php?tip_id=
-" Then when you put the cursor on or in a word, press "\sw", and
-" the word will be swapped with the next word.  The words may
-" even be separated by punctuation (such as "abc = def").
-" nnoremap <unique> <silent><leader>sw "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
+command! -nargs=0 GtagsCscope call s:GtagsCscope()
 
 "neocomplcache.vba 插件替代autocomplpop(acp.vim) omnicppcomplete.vim {{{
 "-----------------------------------------------------------------
@@ -666,37 +856,37 @@ nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
 "set completeopt=menu,longest
 
 " let g:acp_enableAtStartup = 0
-" 
+"
 " " Use neocomplcache.
-" 
+"
 " let g:neocomplcache_enable_at_startup = 1
-" 
+"
 " " Use smartcase.
-" 
+"
 " let g:neocomplcache_enable_smart_case = 1
-" 
+"
 " " Use camel case completion.
-" 
+"
 " let g:neocomplcache_enable_camel_case_completion = 1 "支持驼峰格式匹配关键词
-" 
+"
 " " Use underbar completion.
-" 
+"
 " let g:neocomplcache_enable_underbar_completion = 1 "支持下划线分割的关键词
-" 
+"
 " " Set minimum syntax keyword length.
-" 
+"
 " let g:neocomplcache_min_syntax_length = 3
-" 
+"
 " let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-" 
+"
 " let g:neocomplcache_enable_auto_delimiter = 1
-" 
+"
 " let g:neocomplcache_disable_auto_complete = 1 "设置NeoComplCache不自动弹出补全列表
-" 
+"
 " let g:neocomplcache_enable_wildcard = 1
-" 
+"
 " " Define dictionary.
-" 
+"
 " let g:neocomplcache_dictionary_filetype_lists = {
 "     \ 'default' : '',
 "     \ 'vimshell' : $HOME.'/.vimshell_hist',
@@ -705,88 +895,88 @@ nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
 "     \ 'php' : $VIMFILES.'/dict/php.dic',
 "     \ 'javascript' : $VIMFILES.'/dict/javascript.dic'
 "     \ }
-" 
+"
 " " Define keyword.
-" 
+"
 " if !exists('g:neocomplcache_keyword_patterns')
-" 
+"
 " let g:neocomplcache_keyword_patterns = {}
-" 
+"
 " endif
-" 
+"
 " let g:neocomplcache_keyword_patterns['default'] = '/h/w*'
-" 
+"
 " "let g:neocomplcache_enable_auto_select = 1
-" 
+"
 " let g:neocomplcache_enable_caching_message=1 "显示启动进度
-" 
-" 
+"
+"
 " " Enable omni completion.
-" 
+"
 " autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-" 
+"
 " autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-" 
+"
 " autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-" 
+"
 " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-" 
+"
 " autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-" 
+"
 " autocmd filetype cpp setlocal omnifunc=omni#cpp#complete#main
-" 
+"
 " autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
 " autocmd FileType c setlocal omnifunc=ccomplete#Complete
-" 
+"
 " "Enable heavy omni completion.
-" 
+"
 " if !exists('g:neocomplcache_omni_patterns')
-" 
+"
 " let g:neocomplcache_omni_patterns = {}
-" 
+"
 " endif
-" 
+"
 " let g:neocomplcache_omni_patterns.ruby = '[^. */t]/./w*/|/h/w*::'
-" 
-" 
+"
+"
 " let g:neocomplcache_omni_patterns.php = '[^. /t]->/h/w*/|/h/w*::'
-" 
+"
 " let g:neocomplcache_omni_patterns.c = '/%(/./|->/)/h/w*'
-" 
+"
 " let g:neocomplcache_omni_patterns.cpp = '/h/w*/%(/./|->/)/h/w*/|/h/w*::'
-" 
-" 
+"
+"
 " "映射:
-" 
+"
 " "inoremap neocomplcache#manual_filename_complete()
-" 
+"
 " "inoremap neocomplcache#manual_filename_complete()
-" 
+"
 " "inoremap pumvisible() ? "/" : neocomplcache#manual_keyword_complete()
-" 
+"
 " "inoremap neocomplcache#close_popup()
-" 
+"
 " "inoremap neocomplcache#cancel_popup()
-" 
+"
 " "inoremap neocomplcache#undo_completion()
-" 
+"
 " "inoremap neocomplcache#complete_common_string()
-" 
+"
 " " 函数说明
 " " pumvisible（） 如果弹出菜单可见，返回非零，不然返回零。
-" 
+"
 " " neocomplcache#undo_completion  这个看名字就知道，做一次undo，取消补全。
-" 
+"
 " " neocomplcache#close_popup() 这个是用候选字补全后关闭弹出框
-" 
+"
 " " neocomplcache#cancel_popup()  这个是什么也不做，直接关闭弹出框
-" 
+"
 " " 方法1
 " " let g:neocomplcache_enable_quick_match = 1 “For input-saving, this variable
 " " controls whether you can  choose a candidate with a alphabet or number
 " " displayed beside a candidate after '-'.  When you input 'ho-a',
 " " neocomplcache will select candidate 'a'.
-" 
+"
 " " 方法2
 " " CTRL-N,CTRL-P：
 " " 这两个组合键可以替代TAB的功能，向上或者向下选择你的候选字
@@ -799,7 +989,7 @@ nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
 " " 用SPACE自动旋转当前的候选字，并附加一个空格。这个才是真正无阻碍的输入方式。在SPACE面前什么<TAB>,<ENTER>都是浮云。neocomplcache
 " " 的作者居然都没想到这点 。给出的推荐配置中还在纠结于 <TAB>,<ENTER>。这也是
 " " VISUAL ASSIST X推荐的方式。
-" 
+"
 " " Recommended key-mappings.
 " " <CR>: close popup and save indent.
 " inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
@@ -814,13 +1004,13 @@ nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
 " inoremap <expr><Enter>  pumvisible() ? "\<C-Y>" : "\<Enter>"    "赋予 <Enter> <C-Y> 的功能。 <C-Y> 的功能是选择选项之后关闭弹出"                          "框。这么配置之后，同时也把回车键的换行效果取消了，免得选择之后光标却在下一行********************
 " "" 类似于AutoComplPop用法 .
 " let g:neocomplcache_enable_auto_select = 1
-" 
+"
 " " use neocomplcache & clang_complete
 " " neocomplcache option
 " let g:neocomplcache_force_overwrite_completefunc=1
 " " clang_complete option
 " let g:clang_complete_auto=1
-" 
+"
 " ""}}}
 
 " " YouCompleteMe 代码补全杀手锏{{{
@@ -981,7 +1171,6 @@ function! ToggleNERDTreeAndTagbar()
         endif
     endfor
 endfunction
-nmap <F8> :call ToggleNERDTreeAndTagbar()<CR>
 ""}}}
 
 "vim折叠功能 {{{
