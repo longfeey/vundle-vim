@@ -90,7 +90,7 @@ Bundle 'Lokaltog/vim-powerline'
 Bundle 'Tabular'
 
 " 现在使用global 的gtags_cscope替代cscope
-Bundle 'autoload_cscope.vim'
+"Bundle 'autoload_cscope.vim'
 
 " 代码注释
 Bundle 'The-NERD-Commenter'
@@ -603,15 +603,16 @@ let g:DoxygenToolkit_briefTag_funcName="yes"
 "  echo "!_TAG_FILE_SORTED\t2\t/2=foldcase/" >filenametags
 "  find `pwd` \( -name .repo -o -name .git -o -name .svn -o -name .gitignore \) -prune -o -not -iregex '.*\.\(jar\|gif\|jpg\|png\|class\|exe\|dll\|pdd\|sw[op]\|xls\|doc\|pdf\|zip\|tar\|ico\|ear\|war\|dat\).*' -type f -printf "%f\t%p\t0\n" | sort -f >> ./filenametags
 
+let g:LookupFile_DisableDefaultMap = 1          "不使用默认的按键映射方式，如默认的F5开始查找
 let g:LookupFile_MinPatLength = 2               "最少输入2个字符才开始查找
 let g:LookupFile_PreserveLastPattern = 0        "不保存上次查找的字符串
-"let g:LookupFile_PreservePatternHistory = 1     "保存查找历史
+"let g:LookupFile_PreservePatternHistory = 1    "保存查找历史
 let g:LookupFile_AlwaysAcceptFirst = 1          "回车打开第一个匹配项目
 let g:LookupFile_AllowNewFiles = 0              "不允许创建不存在的文件
-if filereadable("./filenametags")                "设置tag文件的名字
+if filereadable("./filenametags")               "设置tag文件的名字
 let g:LookupFile_TagExpr ='"./filenametags"'
 endif
-let g:LookupFile_FileFilter ='/.class$/|/.o$/|/.obj$/|/.exe$/|/.jar$/|/.zip$/|/.war$/|/.cmd$/|/.sw[opn]$/|/.ear$'
+let g:LookupFile_FileFilter ='/.class$/|/.o$/|/.obj$/|/.exe$/|/.jar$/|/.zip$/|/.war$/|/.cmd$/|/.sw[*]$/|/.ear$'
 
 " lookup file with ignore case
 function! LookupFile_IgnoreCaseFunc(pattern)
@@ -634,11 +635,11 @@ endfunction
 
 let g:LookupFile_LookupFunc = 'LookupFile_IgnoreCaseFunc'
 
-"映射LookupFile为,lk
-map <silent> <leader>lk :LUTags<cr>
-"映射LUBufs为,ll
-map <silent> <leader>ll :LUBufs<cr>
-"映射LUWalk为,lw
+"LookupFile 在tags中查找文件 映射为:,lf
+map <silent> <leader>lf :LUTags<cr>
+"LUBufs 在buffer中查找文件, 映射为,lb
+map <silent> <leader>lb :LUBufs<cr>
+"LUWalk 目录浏览，映射为,lw
 map <silent> <leader>lw :LUWalk<cr>
 " }}}
 
@@ -720,59 +721,6 @@ function! s:GtagsCscope_GtagsRoot()
     return strpart(cmd_output, 0, strlen(cmd_output) - 1)
 endfunction
 
-function! UpdateGtags(f)
-  let dir = fnamemodify(a:f, ':p:h')
-  exe 'silent !cd ' . dir . ' && global -u &> /dev/null &'
-endfunction
-
-"如果GTAGS存在, 则使用gtags-cscope
-"如果GTAGS不存在，则使用cscope
-function! SelectCscopeDb()
-	set nocscopeverbose				"suppress 'duplicate connection' error
-    let gtagsroot = s:GtagsCscope_GtagsRoot()
-	if (!empty(gtagsroot))
-		set cscopeprg=gtags-cscope
-		let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a'
-		exe s:command
-		au BufWritePost *.[ch] call UpdateGtags(expand('<afile>'))
-		au BufWritePost *.[ch]pp call UpdateGtags(expand('<afile>'))
-		au BufWritePost *.[ch]xx call UpdateGtags(expand('<afile>'))
-		au BufWritePost *.java call UpdateGtags(expand('<afile>'))
-		au BufWritePost *.cc call UpdateGtags(expand('<afile>'))
-	else
-		set csprg=/usr/bin/cscope
-		" Use both cscope and ctag
-		set cscopetag
-		" Use cscope for definition search first
-		set cscopetagorder=0
-		let g:autocscope_menus=0
-	    set cscopetagorder=0
-	    " add any database in current directory
-	    if filereadable("cscope.out")
-	        cs add cscope.out
-	    " else add database pointed to by environment
-	    elseif $CSCOPE_DB != ""
-	        cs add $CSCOPE_DB
-	    endif
-	    " Show msg when cscope db added
-		nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-    endif
-	" Show msg when cscope db added
-	"set cscopequickfix=c-,d-,e-,f-,g0,i-,s-,t-
-	"" 解决cscope与tag共存时ctrl+]有时不正常的bug
-	nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
-	nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
-	set cscopeverbose
-endfunc
-
-autocmd FileType c,cpp,java,python call SelectCscopeDb()
-
 function! s:GtagsCscope()
     "
     " Get gtagsroot directory.
@@ -820,14 +768,151 @@ function! s:GtagsCscope()
             ":nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
             " Using 'CTRL-spacebar', the result is displayed in new horizontal window.
 "	endif
-endif
-
-"if g:GtagsCscope_Auto_Load == 1
-"    call s:GtagsCscope()
-"endif
+	endif
 endfunction
 
+
+function! UpdateGtags(f)
+  let dir = fnamemodify(a:f, ':p:h')
+  exe 'silent !cd ' . dir . ' && global -u &> /dev/null &'
+endfunction
+
+"==
+" windowdir
+"  Gets the directory for the file in the current window
+"  Or the current working dir if there isn't one for the window.
+"  Use tr to allow that other OS paths, too
+function! s:windowdir()
+  if winbufnr(0) == -1
+    let unislash = getcwd()
+  else
+    let unislash = fnamemodify(bufname(winbufnr(0)), ':p:h')
+  endif
+    return tr(unislash, '\', '/')
+endfunc
+"
+"==
+" Find_in_parent
+" find the file argument and returns the path to it.
+" Starting with the current working dir, it walks up the parent folders
+" until it finds the file, or it hits the stop dir.
+" If it doesn't find it, it returns "Nothing"
+function! s:Find_in_parent(fln,flsrt,flstp)
+  let here = a:flsrt
+  while ( strlen( here) > 0 )
+    if filereadable( here . "/" . a:fln )
+      return here
+    endif
+    let fr = match(here, "/[^/]*$")
+    if fr == -1
+      break
+    endif
+    let here = strpart(here, 0, fr)
+    if here == a:flstp
+      break
+    endif
+  endwhile
+  return "Nothing"
+endfunc
+
+" 下面的函数替代autoload_cscope.vim
+"==
+" Unload_csdb
+"  drop cscope connections.
+function! s:Unload_csdb()
+  if exists("b:csdbpath")
+    if cscope_connection(3, "out", b:csdbpath)
+      let save_csvb = &csverb
+      set nocsverb
+      exe "cs kill " . b:csdbpath
+      set csverb
+      let &csverb = save_csvb
+    endif
+  endif
+endfunc
+"
+"==
+" Cycle_csdb
+"  cycle the loaded cscope db.
+function! s:Cycle_csdb()
+    if exists("b:csdbpath")
+      if cscope_connection(3, "out", b:csdbpath)
+        return
+        "it is already loaded. don't try to reload it.
+      endif
+    endif
+    let newcsdbpath = s:Find_in_parent("cscope.out",s:windowdir(),$HOME)
+"    echo "Found cscope.out at: " . newcsdbpath
+"    echo "Windowdir: " . s:windowdir()
+    if newcsdbpath != "Nothing"
+      let b:csdbpath = newcsdbpath
+      if !cscope_connection(3, "out", b:csdbpath)
+        let save_csvb = &csverb
+        "set nocsverb
+        set csverb
+        exe "cs add " . b:csdbpath . "/cscope.out " . b:csdbpath
+        let &csverb = save_csvb
+      endif
+      "
+    else " No cscope database, undo things. (someone rm-ed it or somesuch)
+      call s:Unload_csdb()
+    endif
+endfunc
+
+"如果GTAGS存在, 则使用gtags-cscope
+"如果GTAGS不存在，则使用cscope
+function! SelectCscopeDb()
+	set nocscopeverbose				"suppress 'duplicate connection' error
+    let gtagsroot = s:GtagsCscope_GtagsRoot()
+	if (!empty(gtagsroot))
+		set cscopeprg=gtags-cscope
+		let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a'
+		exe s:command
+
+		"保存文件时自动更新gtags
+		"au BufWritePost *.[ch] call UpdateGtags(expand('<afile>'))
+		"au BufWritePost *.[ch]pp call UpdateGtags(expand('<afile>'))
+		"au BufWritePost *.[ch]xx call UpdateGtags(expand('<afile>'))
+		"au BufWritePost *.java call UpdateGtags(expand('<afile>'))
+		"au BufWritePost *.cc call UpdateGtags(expand('<afile>'))
+	else
+		set csprg=/usr/bin/cscope
+		" Use both cscope and ctag
+		set cscopetag
+		" Use cscope for definition search first
+		set cscopetagorder=0
+		let g:autocscope_menus=0
+	    set cscopetagorder=0
+		" auto toggle the menu
+		augroup autoload_cscope
+		 au!
+		 au BufEnter *.[chly]  call <SID>Cycle_csdb()
+		 au BufEnter *.cc      call <SID>Cycle_csdb()
+		 au BufEnter *.cpp     call <SID>Cycle_csdb()
+		 au BufEnter *.java    call <SID>Cycle_csdb()
+		 au BufUnload *.[chly] call <SID>Unload_csdb()
+		 au BufUnload *.cc     call <SID>Unload_csdb()
+		 au BufUnload *.cpp     call <SID>Unload_csdb()
+		 au BufUnload *.java    call <SID>Unload_csdb()
+		augroup END
+		nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+    endif
+	"set cscopequickfix=c-,d-,e-,f-,g0,i-,s-,t-
+	"" 解决cscope与tag共存时ctrl+]有时不正常的bug
+	nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
+	nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+	set cscopeverbose
+endfunc
+
+autocmd FileType c,cpp,java,python call SelectCscopeDb()
 command! -nargs=0 GtagsCscope call s:GtagsCscope()
+"}}}
 
 "neocomplcache.vba 插件替代autocomplpop(acp.vim) omnicppcomplete.vim {{{
 "-----------------------------------------------------------------
