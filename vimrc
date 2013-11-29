@@ -35,7 +35,18 @@ Bundle 'taglist.vim'
 
 " 查找文件的插件
 Bundle 'kien/ctrlp.vim'
+" 命令查找
+Bundle 'sgur/ctrlp-extensions.vim'
+Bundle 'jasoncodes/ctrlp-modified.vim'
+Bundle 'tacahiroy/ctrlp-funky'
+Bundle 'mattn/ctrlp-register'
+Bundle 'Shougo/unite.vim'
+
+" faster then grep
 Bundle 'ack.vim'
+
+"silver searcher faster then ack
+Bundle 'rking/ag.vim'
 Bundle 'lookupfile'
 Bundle 'gtags.vim'
 Bundle 'OmniTags'
@@ -207,14 +218,24 @@ set pastetoggle=<F2>
 " set the time(ms) break to refresh the preview window, I recommend 500ms~1000ms with good experience
 set updatetime=500
 
-" ack 快速查找，类似grep,但可以
+" ack 快速查找，类似grep
 " ubuntu install: sudo apt-get install ack-grep
-let g:ackprg="/usr/bin/ack-grep -H --nogroup --column"
+"let g:ackprg="/usr/bin/ack-grep -H --nogroup --column"
 
-"/<C-R><C-W> : 把单个<cword>单词放入搜索或者命令行
-nnoremap <silent> <F3> :Grep<CR>
-" nnoremap <silent> <F4> :Rgrep<CR>
-nmap  <F4> :vimgrep /<C-R>=expand("<cword>")<cr>/ **/*.c **/*.h<cr><C-o>:cw<cr>
+" silver searcher 比ack快, 需要安装
+"https://github.com/ggreer/the_silver_searcher
+"git clone https://github.com/ggreer/the_silver_searcher ag && cd ag && ./build.sh && sudo make install
+let g:ackprg = 'ag --nogroup --nocolor --column'
+
+" :LAck the word under the cursor in the current file and open the location list.
+nnoremap <F3> :silent Ack \\b<C-r><C-w>\\b %:p<Bar>:lwindow<CR>
+vnoremap <F3> "zy:silent Ack <C-r>z %:p<Bar>:lwindow<CR>
+map <F4> :Tagbar<CR>
+
+" :LAck the word under the cursor recursively and open the location list.
+nnoremap <Leader>gW :silent Ack \\b<C-r><C-w>\\b<Bar>:lwindow<CR>
+vnoremap <Leader>gW "zy:silent Ack <C-r>z<Bar>:lwindow<CR>
+
 " make you could press F6 key to enable or disable the preview window, you can also set to other favorite hotkey here
 "nnoremap <F6> :AutoPreviewToggle<CR>
 "inoremap <F6> <ESC>:AutoPreviewToggle<CR>i
@@ -643,8 +664,87 @@ map <silent> <leader>lb :LUBufs<cr>
 map <silent> <leader>lw :LUWalk<cr>
 " }}}
 
+"===============================
 "ctrlp {{{
-let g:ctrlp_user_command = 'find %s -type f'
+"===============================
+noremap <C-W><C-U> :CtrlPMRU<CR>
+nnoremap <C-W>u :CtrlPMRU<CR>
+
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+	 " Use ag over grep
+	 set grepprg=ag\ --nogroup\ --nocolor
+
+	 " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+	 let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+	 " ag is fast enough that CtrlP doesn't need to cache
+	 let g:ctrlp_use_caching = 0
+else
+	let g:ctrlp_user_command = {
+	  \ 'types': {
+	  \ 1: ['.git', 'cd %s && git ls-files'],
+	  \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+	  \ },
+	  \ 'fallback': 'find %s -type f'
+	  \ }
+endif
+
+" list function in the current file
+let g:ctrlp_extensions = ['funky']
+"let g:ctrlp_by_filename = 1
+let g:ctrlp_regexp = 1
+let g:ctrlp_working_path_mode='ra'
+let g:ctrlp_root_markers='.ctrlp'
+let g:ctrlp_max_files = 0
+let g:ctrlp_tabpage_position = 'ac'
+let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20,results:10'
+let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*' " MacOSX/Linux
+let g:ctrlp_mruf_max=500
+let g:ctrlp_follow_symlinks=1
+
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*        " Linux/MacOSX
+let g:ctrlp_custom_ignore = {
+            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+            \ 'file': '\v\.(exe|so|dll|o|a|dylib|sw*|cmd|ko)$',
+            \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
+            \ }
+let g:ctrlp_prompt_mappings = {
+            \ 'PrtBS()':              ['<bs>', '<c-]>'],
+            \ 'PrtDelete()':          ['<del>'],
+            \ 'PrtDeleteWord()':      ['<c-w>'],
+            \ 'PrtClear()':           ['<c-u>'],
+            \ 'PrtSelectMove("j")':   ['<c-j>', '<down>'],
+            \ 'PrtSelectMove("k")':   ['<c-k>', '<up>'],
+            \ 'PrtSelectMove("t")':   ['<Home>', '<kHome>'],
+            \ 'PrtSelectMove("b")':   ['<End>', '<kEnd>'],
+            \ 'PrtSelectMove("u")':   ['<PageUp>', '<kPageUp>'],
+            \ 'PrtSelectMove("d")':   ['<PageDown>', '<kPageDown>'],
+            \ 'PrtHistory(-1)':       ['<c-n>'],
+            \ 'PrtHistory(1)':        ['<c-p>'],
+            \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>'],
+            \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-s>'],
+            \ 'AcceptSelection("t")': ['<c-t>'],
+            \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>'],
+            \ 'ToggleFocus()':        ['<s-tab>'],
+            \ 'ToggleRegex()':        ['<c-r>'],
+            \ 'ToggleByFname()':      ['<c-d>'],
+            \ 'ToggleType(1)':        ['<c-f>', '<c-up>'],
+            \ 'ToggleType(-1)':       ['<c-b>', '<c-down>'],
+            \ 'PrtExpandDir()':       ['<tab>'],
+            \ 'PrtInsert("c")':       ['<MiddleMouse>', '<insert>'],
+            \ 'PrtInsert()':          ['<c-\>'],
+            \ 'PrtCurStart()':        ['<c-a>'],
+            \ 'PrtCurEnd()':          ['<c-e>'],
+            \ 'PrtCurLeft()':         ['<c-h>', '<left>', '<c-^>'],
+            \ 'PrtCurRight()':        ['<c-l>', '<right>'],
+            \ 'PrtClearCache()':      ['<F5>'],
+            \ 'PrtDeleteEnt()':       ['<F7>'],
+            \ 'CreateNewFile()':      ['<c-y>'],
+            \ 'MarkToOpen()':         ['<c-z>'],
+            \ 'OpenMulti()':          ['<c-o>'],
+            \ 'PrtExit()':            ['<esc>', '<c-c>', '<c-g>'],
+            \ }
 "}}}
 
 set tags=tags;
@@ -1098,11 +1198,26 @@ command! -nargs=0 GtagsCscope call s:GtagsCscope()
 "
 " ""}}}
 
+""""""""""syntastic""""""""""""
+let g:syntastic_check_on_open = 1
+let g:syntastic_cpp_include_dirs = ['/usr/include/']
+let g:syntastic_cpp_remove_include_errors = 1
+let g:syntastic_cpp_check_header = 1
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libstdc++'
+"set error or warning signs
+let g:syntastic_error_symbol = '✗'
+let g:syntastic_warning_symbol = '⚠'
+"whether to show balloons
+let g:syntastic_enable_balloons = 1
+
 " " YouCompleteMe 代码补全杀手锏{{{
-let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
 "set YouCompleteMe trigger key
 let g:ycm_key_list_select_completion = ['<c-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<c-p>', '<Up>']
+let g:ycm_seed_identifiers_with_syntax = 1
+let g:ycm_confirm_extra_conf = 0
 
 " 每行超过80个的字符用下划线标示
 au BufRead,BufNewFile *.asm,*.c,*.cpp,*.java,*.cs,*.sh,*.lua,*.pl,*.pm,*.py,*.rb,*.hs,*.vim 2match Underlined /.\%81v/
